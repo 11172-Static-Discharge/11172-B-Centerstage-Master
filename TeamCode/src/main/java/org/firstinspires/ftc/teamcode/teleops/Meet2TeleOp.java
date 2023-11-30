@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.config.Lift;
 import org.firstinspires.ftc.teamcode.config.Slide;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
@@ -18,12 +19,24 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 @TeleOp(name = "Meet2TeleOp", group = "drive")
 public class Meet2TeleOp extends LinearOpMode {
 
+    public double[] hover = new double[]{0.1, 0.9, 0.9};
+    public double[] pickup = new double[]{0.12, 0.88, 0.92};
+    public double[] drop1 = new double[]{0.58, 0.42, 0.34};
+    public double[] drop2 = new double[]{0.58, 0.42, 0.34};
+    public double[] drop3 = new double[]{0.4, 0.6, 0.38};
+
+    public boolean rClosed, lClosed;
+
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Slide slide = new Slide(telemetry, hardwareMap);
+        Lift lift = new Lift(telemetry, hardwareMap);
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        rClosed = false;
+        lClosed = false;
 
         waitForStart();
 
@@ -37,7 +50,19 @@ public class Meet2TeleOp extends LinearOpMode {
             );
 
             slide.set(gamepad1.right_stick_y);
-            if(gamepad1.dpad_down) slide.pullDown();
+
+            if(gamepad1.dpad_up) lift.setLiftPos(drop3);
+            if(gamepad1.dpad_left) lift.setLiftPos(drop2);
+            if(gamepad1.dpad_down) lift.setLiftPos(drop1);
+
+            if(gamepad1.right_bumper) rClosed = !rClosed;
+            if(gamepad1.left_bumper) lClosed = !lClosed;
+
+            if(gamepad1.x) lift.setLiftPos(pickup);
+            if(gamepad1.circle) lift.setLiftPos(hover);
+
+            //if(gamepad1.y) lift.setLauncher(1);
+
 
             drive.update();
 

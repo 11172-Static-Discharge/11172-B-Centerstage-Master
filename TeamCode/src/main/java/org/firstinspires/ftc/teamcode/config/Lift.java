@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.config;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -12,49 +11,36 @@ public class Lift
     private static int ERROR_MARGIN = 20;
     private DcMotor intake;
     private DcMotor rightArm, leftArm;
-    private Servo claw, rightWrist; //leftWrist;
+    private Servo clawR, clawL, liftR, liftL, wrist, launcher; //leftWrist;
+
+    double clawLOpen = 1;
+    double clawLClose = 0;
+
+    double clawROpen = 0;
+    double clawRClose = 1;
 
     public Lift(Telemetry tele, HardwareMap map)
     {
-        rightArm = map.get(DcMotor.class, "rightArm");
-        leftArm = map.get(DcMotor.class, "leftArm");
-        claw = map.servo.get("claw");
-        //leftWrist = map.servo.get("leftWrist");
-        rightWrist = map.servo.get("rightWrist");
+        clawR = map.servo.get("clawR");
+        clawL = map.servo.get("clawL");
+        liftR = map.servo.get("liftR");
+        liftL = map.servo.get("liftL");
+        wrist = map.servo.get("wrist");
+        launcher = map.servo.get("launcher");
+
     }
 
-    public void setArmPower(double power, int direction)
+    public void setLiftPos(double[] positions)
     {
-        DcMotorSimple.Direction dir = direction == 1 ? DcMotorSimple.Direction.FORWARD : DcMotorSimple.Direction.REVERSE;
-
-        rightArm.setDirection(dir);
-        leftArm.setDirection(dir);
-
-        rightArm.setPower(power);
-        leftArm.setPower(power);
+        liftR.setPosition(positions[0]);
+        liftL.setPosition(positions[1]);
+        wrist.setPosition(positions[2]);
     }
 
-    public void setWristPosition(double position)
-    {
-        //leftWrist.setPosition(position);
-        rightWrist.setPosition(position);
-    }
+    public void setRightClaw(boolean closed) {clawR.setPosition(closed ? clawRClose : clawROpen);}
+    public void setLeftClaw(boolean closed) {clawL.setPosition(closed ? clawLClose : clawLOpen);}
 
-    public void setMotorTargetPos(int rightPosition, int leftPosition)
-    {
+    public void setLauncher(double position){launcher.setPosition(position);}
 
 
-        rightArm.setTargetPosition(rightPosition);
-        leftArm.setTargetPosition(leftPosition);
-
-        rightArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    }
-
-    /*public boolean isAtTarget(int reachHeight, DcMotor motor)
-    {return (Math.abs(motor.getCurrentPosition() - reachHeight) < ERROR_MARGIN);}*/
-
-    public void openClaw() {claw.setPosition(0.75);}
-    public void middleClaw() {claw.setPosition(0.225);}
-    public void closeClaw() {claw.setPosition(1);}
 }
