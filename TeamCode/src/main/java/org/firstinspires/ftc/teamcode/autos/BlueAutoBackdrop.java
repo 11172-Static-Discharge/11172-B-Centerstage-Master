@@ -18,7 +18,7 @@ import java.util.List;
 
 @Autonomous (name = "BlueAutoBackdrop", group = "autos")
 public class BlueAutoBackdrop extends LinearOpMode
-{    private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
+{    private static final boolean USE_WEBCAM = true;  // true for webcam, false for phonhie camera
 
     /**
      * The variable to store our instance of the TensorFlow Object Detection processor.
