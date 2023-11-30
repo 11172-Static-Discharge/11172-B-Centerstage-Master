@@ -15,8 +15,8 @@ public class VisionCamera {
     public VisionPortal visionPortal;
 
     public Telemetry telemetry;
-    private static final String[] labels = {"BlueElementv2", "RedElementv2"};
-    private static final String TFOD_MODEL_ASSET = "/sdcard/FIRST/tflitemodels/ModelMoreTraining.tflite";
+    private static final String[] labels = {"BLUE ELEMENT NAME", "RED ELEMENT NAME"};
+    private static final String TFOD_MODEL_ASSET = "/sdcard/FIRST/tflitemodels/YOUR MODEL NAME HERE.tflite";
 
     public VisionCamera(HardwareMap map, Telemetry tele) {
         telemetry = tele;
@@ -33,6 +33,8 @@ public class VisionCamera {
                 .setCamera(map.get(WebcamName.class, "Webcam 1"))
                 .addProcessor(tfod)
                 .build();
+        //WILL ONLY SHOW DETECTIONS IF IT IS AT LEAST 80% CONFIDENT
+        //YOU CAN ADJUST THIS
         tfod.setMinResultConfidence(0.8F);
     }
 
@@ -57,6 +59,13 @@ public class VisionCamera {
     public String getSide() {
         List<Recognition> recognition = tfod.getRecognitions();
         if (recognition.isEmpty()) return "left";
+
+        //what this does is it checks if the object detected is greater than x value 300 it is on the right
+        //if its less than that its on the middle
+
+        //OUR BOT IS SET UP SO THAT THE CAMERA CANNOT SEE THE LEFT TAPE
+        //therefore if it doesnt detect anything its left
+
         for (int i = 0; i < recognition.size(); i++) {
             if (recognition.get(i).getWidth() > 250 || recognition.get(i).getHeight() > 250);
             else if (recognition.get(i).getLeft() > 300) return "right";
