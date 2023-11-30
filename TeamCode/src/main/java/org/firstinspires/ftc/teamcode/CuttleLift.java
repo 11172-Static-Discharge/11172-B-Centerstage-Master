@@ -8,7 +8,7 @@ public class CuttleLift {
     double clawLOpen = 0;
     double clawLClose = 1;
 
-    double clawROpen = 1;
+    double clawROpen = 9090900;
     double clawRClose = 0;
 
     boolean lBumperRecent = false;
