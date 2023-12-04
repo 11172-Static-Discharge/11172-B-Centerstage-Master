@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -18,68 +19,41 @@ public class CalibrateLift {
     public double clawROpen = 0;
     public double clawRClose = 1;
 
-    public boolean lBumperRecent, rBumperRecent, recent = false;
+    public DcMotorEx liftLM, liftRM;
 
-    public double liftLGround = 0.92;
-    public double liftLHeight1 = 1;
-    public double liftLHeight2 = 1;
-
-    public double liftRGround = 0.07944;
-    double liftRHeight1 = 1;
-    double liftRHeight2 = 1;
 
     double increment = 0.02;
 
-    double wristHoverGround = 0.3;
-    double wristHeight1 = 1;
-    double wristHeight2 = 1;
-
-    double wristRHoverGround = 1;
-    double wristRHeight1 = 1;
-    double wristRHeight2 = 1;
 
 
-    public Servo liftL, liftR, wrist, launcher, clawL, clawR;
+    public Servo wrist, clawL, clawR;
 
-    public ColorRangeSensor cL;
-    public ColorRangeSensor cR;
 
     public double wristPos = 0.5;
+    public int motorIncrement = 3;
 
-
-    List<Servo> servos = new ArrayList<Servo>();
-    public DcMotor slide;
-
-
-    public String closeMode;
-
-    public double clawLPos, clawRPos, liftLPos, liftRPos;
+    public double clawLPos, clawRPos;
 
     Telemetry tele;
     public CalibrateLift(HardwareMap map, Telemetry tele) {
         this.map = map;
         this.tele = tele;
 
-        liftL = map.servo.get("liftL");
-        liftR = map.servo.get("liftR");
+        //liftL = map.servo.get("liftL");
+        //liftR = map.servo.get("liftR");
 
         wrist = map.servo.get("wrist");
 
         clawL = map.servo.get("clawL");
         clawR = map.servo.get("clawR");
 
-        servos.add(liftL);
-        servos.add(liftR);
-        servos.add(wrist);
-        servos.add(clawL);
-        servos.add(clawR);
 
-        launcher = map.servo.get("launcher");
-        slide = map.dcMotor.get("slide");
+        liftLM = map.get(DcMotorEx.class, "liftL");
+        liftRM = map.get(DcMotorEx.class, "liftR");
 
-        //cR = map.get(ColorRangeSensor.class, "cR");
-        //cL = map.get(ColorRangeSensor.class, "cL");
-        closeMode = "MANUAL";
+        liftLM.setTargetPositionTolerance(1);
+        liftRM.setTargetPositionTolerance(1);
+
     }
 
     public void useClaw(boolean leftClose, boolean leftOpen, boolean rightClose, boolean rightOpen) {
@@ -89,51 +63,32 @@ public class CalibrateLift {
         if (rightOpen) clawR.setPosition(clawROpen);
     }
 
+    public void calMotorLift(boolean up, boolean down) {
 
+        if(up) {
+            liftLM.setTargetPosition(liftLM.getCurrentPosition() + motorIncrement);
+            liftRM.setTargetPosition(liftRM.getCurrentPosition() - motorIncrement);
 
-    /*
-    public void autoClose(String autoClose) {
-        if (autoClose.equals("AUTO")) {
-            if (cL.getDistance(DistanceUnit.CM) < 1) clawL.setPosition(clawLClose);
-            if (cR.getDistance(DistanceUnit.CM) < 1) clawR.setPosition(clawRClose);
+            liftLM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            liftRM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
-    }*/
 
-    /*
-    public void toggleAutoClose(boolean toggle) {
-        if (toggle) {
-            if(closeMode.equals("AUTO")) {
-                closeMode = "MANUAL";
-            }
-            if(closeMode.equals("MANUAL")) {
-                closeMode = "AUTO";
-            }
-        }
-        autoClose(closeMode);
-    }*/
+        if (down) {
+            liftLM.setTargetPosition(liftLM.getCurrentPosition() - motorIncrement);
+            liftRM.setTargetPosition(liftRM.getCurrentPosition() + motorIncrement);
 
-    public void launch() {
-        launcher.setPosition(0);
-    }
-    public void launch(boolean launch) {
-        if (launch) {
-            launcher.setPosition(0);
+            liftLM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            liftRM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
-        else {
-            launcher.setPosition(1);
-        }
+        //liftLMPos = liftLM.getCurrentPosition();
+        //liftRMPos = liftRM.getCurrentPosition();
     }
 
-
-
-    public void setWristGround(boolean x) {
-        if (x) wrist.setPosition(wristHoverGround);
-    }
-
-    public void calLift(boolean up, boolean down) {
+    /*public void calLift(boolean up, boolean down) {
         if(up) {
             liftL.setPosition(liftLPos + increment);
             liftR.setPosition(liftRPos - increment);
+
         }
         if (down) {
             liftL.setPosition(liftLPos - increment);
@@ -142,14 +97,8 @@ public class CalibrateLift {
         liftLPos = liftL.getPosition();
         liftRPos = liftR.getPosition();
 
-    }
+    }*/
 
-    public void resetLift(boolean dfs) {
-        if (dfs) {
-            liftL.setPosition(0.5);
-            liftR.setPosition(0.5);
-        }
-    }
 
     public void calWrist(boolean up, boolean down) {
 
@@ -171,45 +120,5 @@ public class CalibrateLift {
 
         clawLPos = clawL.getPosition();
         clawRPos = clawR.getPosition();
-    }
-    public void setLiftPos(double pos) {
-
-        //hover over ground
-        if (pos == 0) {
-            wrist.setPosition(wristHoverGround);
-
-            liftL.setPosition(liftLGround);
-            liftR.setPosition(liftRGround);
-
-
-        }
-
-        //Backdrop Height 1
-        if (pos == 1) {
-            liftL.setPosition(liftLHeight1);
-            liftR.setPosition(liftRHeight1);
-
-            wrist.setPosition(wristHeight1);
-        }
-
-        //Backdrop Height 2
-        if (pos == 2) {
-            liftL.setPosition(liftLHeight2);
-            liftR.setPosition(liftRHeight2);
-
-            wrist.setPosition(wristHeight2);
-
-        }
-    }
-
-    public void telemetryLift() {
-        tele.addData("wrist", wrist.getPosition());
-
-        tele.addData("liftL", liftL.getPosition());
-        tele.addData("liftR", liftR.getPosition());
-
-        tele.addData("clawL", clawL.getPosition());
-        tele.addData("clawR", clawR.getPosition());
-        tele.update();
     }
 }

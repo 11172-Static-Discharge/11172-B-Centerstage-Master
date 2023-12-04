@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.BetterBoolGamepad;
 import org.firstinspires.ftc.teamcode.config.Lift;
 import org.firstinspires.ftc.teamcode.config.Slide;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -20,23 +21,32 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 public class Meet2TeleOp extends LinearOpMode {
 
     public double[] hover = new double[]{0.1, 0.9, 0.9};
-    public double[] pickup = new double[]{0.12, 0.88, 0.92};
+    public double[] pickup = new double[]{0.12, 0.88, 0.93};
     public double[] drop1 = new double[]{0.58, 0.42, 0.34};
     public double[] drop2 = new double[]{0.58, 0.42, 0.34};
-    public double[] drop3 = new double[]{0.4, 0.6, 0.38};
+    public double[] drop3 = new double[]{0.6, 0.4, 0.38};
+
+
 
     public boolean rClosed, lClosed;
+    public boolean positionSet;
 
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Slide slide = new Slide(telemetry, hardwareMap);
         Lift lift = new Lift(telemetry, hardwareMap);
+        BetterBoolGamepad bGamepad1 = new BetterBoolGamepad(gamepad1);
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        lift.liftL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        lift.liftR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         rClosed = false;
         lClosed = false;
+
+        positionSet = false;
 
         waitForStart();
 
@@ -51,19 +61,41 @@ public class Meet2TeleOp extends LinearOpMode {
 
             slide.set(gamepad1.right_stick_y);
 
-            if(gamepad1.dpad_up) lift.setLiftPos(drop3);
-            if(gamepad1.dpad_left) lift.setLiftPos(drop2);
-            if(gamepad1.dpad_down) lift.setLiftPos(drop1);
+            if(gamepad1.left_stick_y != 0)
+            {
+                positionSet = false;
 
-            if(gamepad1.right_bumper) rClosed = !rClosed;
-            if(gamepad1.left_bumper) lClosed = !lClosed;
+                lift.liftL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                lift.liftR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            if(gamepad1.x) lift.setLiftPos(pickup);
-            if(gamepad1.circle) lift.setLiftPos(hover);
+                lift.setLiftPower(gamepad1.left_stick_y, -gamepad1.left_stick_y);
+
+            }
+            else {
+                if(!positionSet)
+                {
+                    positionSet = true;
+                    lift.liftL.setTargetPosition(lift.liftL.getCurrentPosition());
+                    lift.liftR.setTargetPosition(lift.liftR.getCurrentPosition());
+
+                }
+
+                lift.interpolateToEncoder(lift.liftL, lift.liftL.getTargetPosition(), 500, 1);
+                lift.interpolateToEncoder(lift.liftR, lift.liftR.getTargetPosition(), 500, 1);
+            }
+
+            telemetry.addData("Left Target", lift.liftL.getTargetPosition());
+            telemetry.addData("Right Target", lift.liftR.getTargetPosition());
+
+            if(bGamepad1.right_bumper()) rClosed = !rClosed;
+            if(bGamepad1.left_bumper()) lClosed = !lClosed;
+
 
             //if(gamepad1.y) lift.setLauncher(1);
 
 
+            lift.setRightClaw(rClosed);
+            lift.setLeftClaw(lClosed);
             drive.update();
 
             Pose2d poseEstimate = drive.getPoseEstimate();

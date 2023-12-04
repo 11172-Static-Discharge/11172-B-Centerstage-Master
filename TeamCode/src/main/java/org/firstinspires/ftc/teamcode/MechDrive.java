@@ -20,10 +20,10 @@ public class MechDrive {
     public long timeRan;
 
     public MechDrive(HardwareMap map, Telemetry tele) {
-        frontLWheel = map.dcMotor.get("fl");
-        frontRWheel = map.dcMotor.get("fr");
-        backLWheel = map.dcMotor.get("bl");
-        backRWheel = map.dcMotor.get("br");
+        frontLWheel = map.dcMotor.get("motorFL");
+        frontRWheel = map.dcMotor.get("motorFR");
+        backLWheel = map.dcMotor.get("motorBL");
+        backRWheel = map.dcMotor.get("motorBR");
     }
 
 

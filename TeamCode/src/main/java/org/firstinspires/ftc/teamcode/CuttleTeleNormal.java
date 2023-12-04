@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class CuttleTeleNormal extends OpMode {
 
     //lift wrapper
-    CuttleLift lift;
+    CalibrateLift calibrateLift;
 
     //drivetrain, can be anything
     MechDrive drive;
@@ -20,7 +20,7 @@ public class CuttleTeleNormal extends OpMode {
     //idk
 
     //gamepad that registers a hold of a button as one press
-    BetterBoolGamepad bGamepad2;
+    BetterBoolGamepad bGamepad2, bGamepad1;
 
     FirstBoolean lt;
     FirstBoolean rt;
@@ -38,39 +38,55 @@ public class CuttleTeleNormal extends OpMode {
 
 
         //init lift wrapper
-        lift = new CuttleLift(hardwareMap, telemetry);
+        calibrateLift = new CalibrateLift(hardwareMap, telemetry);
 
         //init drive
         drive = new MechDrive(hardwareMap, telemetry);
 
         //init better gamepad
         bGamepad2 = new BetterBoolGamepad(gamepad2);
+        bGamepad1 = new BetterBoolGamepad(gamepad1);
 
         lt = new FirstBoolean();
         rt = new FirstBoolean();
 
-        //starting lift at 0.5
-        lift.liftL.setPosition(0.5);
-        lift.liftR.setPosition(0.5);
+
+        calibrateLift.clawL.setPosition(calibrateLift.clawLClose);
+        calibrateLift.clawR.setPosition(calibrateLift.clawRClose);
 
     }
     @Override
     public void loop() {
 
         //telemety
-        telemetry.addData("wrist: ", lift.wrist.getPosition());
+        telemetry.addData("actual wrist: ", calibrateLift.wrist.getPosition());
 
-        telemetry.addData("liftL: ", lift.liftL.getPosition());
-        telemetry.addData("liftR: ", lift.liftR.getPosition());
+        telemetry.addLine();
 
-        telemetry.addData("clawL: ", lift.clawL.getPosition());
-        telemetry.addData("clawR: ", lift.clawR.getPosition());
+        telemetry.addData("actual liftL: ", calibrateLift.liftLM.getCurrentPosition());
+        telemetry.addData("actual liftR: ", calibrateLift.liftRM.getCurrentPosition());
 
-        telemetry.addData("liftLPos: ", lift.liftLPos);
-        telemetry.addData("liftRPos: ", lift.liftRPos);
-        telemetry.addData("wristPos: ", lift.wristPos);
+        telemetry.addLine();
 
-        telemetry.addData("collection mode: ", lift.closeMode);
+        telemetry.addData("clawL: ", calibrateLift.clawL.getPosition());
+        telemetry.addData("clawR: ", calibrateLift.clawR.getPosition());
+
+
+        telemetry.addLine();
+
+        telemetry.addData("expected wristPos: ", calibrateLift.wristPos);
+
+        telemetry.addLine();
+
+
+        telemetry.addData("expected clawLPos", calibrateLift.clawLPos);
+        telemetry.addData("actual clawL", calibrateLift.clawL.getPosition());
+
+        telemetry.addLine();
+
+        telemetry.addData("expected clawRPos", calibrateLift.clawR.getPosition());
+        telemetry.addData("actual clawR", calibrateLift.clawR.getPosition());
+
         telemetry.update();
 
 
@@ -84,13 +100,13 @@ public class CuttleTeleNormal extends OpMode {
                 gamepad1.right_stick_x * speed);
 
         //using claw
-        lift.useClaw(bGamepad2.left_bumper(), lt.betterboolean(gamepad2.left_trigger>0) , bGamepad2.right_bumper(), rt.betterboolean(gamepad2.right_trigger>0));
+        calibrateLift.useClaw(bGamepad2.left_bumper(), lt.betterboolean(gamepad2.left_trigger>0) , bGamepad2.right_bumper(), rt.betterboolean(gamepad2.right_trigger>0));
 
 
 
 
 
-        if (bGamepad2.a()) lift.setLiftPos(0);
+        //if (bGamepad2.a()) calibrateLift.setLiftPos(0);
         //if (bGamepad2.x() || bGamepad2.b()) lift.setLiftPos(1);
         //if (bGamepad2.y()) lift.setLiftPos(2);
 
@@ -100,9 +116,9 @@ public class CuttleTeleNormal extends OpMode {
 
 
 
-        lift.calLift(bGamepad2.dpad_up(), bGamepad2.dpad_down());
+        calibrateLift.calWrist(bGamepad2.dpad_left(), bGamepad2.dpad_right());
 
-        lift.calWrist(bGamepad2.dpad_left(), bGamepad2.dpad_right());
+        calibrateLift.calClaw(bGamepad1.dpad_up(), bGamepad1.dpad_down(), bGamepad1.dpad_left(), bGamepad1.dpad_right());
 
         //setting lift pos
         //if (gamepad2.x) lift.setLiftPos(0);
