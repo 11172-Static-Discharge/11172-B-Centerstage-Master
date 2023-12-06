@@ -25,6 +25,7 @@ public class Meet2TeleOp extends LinearOpMode {
     public double[] drop1 = new double[]{0.58, 0.42, 0.34};
     public double[] drop2 = new double[]{0.58, 0.42, 0.34};
     public double[] drop3 = new double[]{0.6, 0.4, 0.38};
+    public double speed = 0.5;
 
 
 
@@ -53,11 +54,15 @@ public class Meet2TeleOp extends LinearOpMode {
         while (!isStopRequested()) {
             drive.setWeightedDrivePower(
                     new Pose2d(
-                            -gamepad2.left_stick_y,
-                            -gamepad2.left_stick_x,
-                            -gamepad2.right_stick_x
+                            -gamepad2.left_stick_y * speed,
+                            -gamepad2.left_stick_x * speed,
+                            -gamepad2.right_stick_x * speed
                     )
             );
+
+            //right trigger to speed up, left trigger to slow down
+            if (gamepad1.right_trigger>0) speed = 0.5+gamepad1.right_trigger/2;
+            if (gamepad1.left_trigger>0) speed = gamepad1.right_trigger/2;
 
             slide.set(gamepad1.right_stick_y);
 
@@ -89,6 +94,11 @@ public class Meet2TeleOp extends LinearOpMode {
 
             if(bGamepad1.right_bumper()) rClosed = !rClosed;
             if(bGamepad1.left_bumper()) lClosed = !lClosed;
+
+            if(gamepad1.dpad_up) lift.setWristPos(drop3);
+            if(gamepad1.dpad_right) lift.setWristPos(hover);
+            if(gamepad1.dpad_down) lift.setWristPos(pickup);
+
 
 
             //if(gamepad1.y) lift.setLauncher(1);

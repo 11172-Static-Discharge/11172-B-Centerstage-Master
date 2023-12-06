@@ -44,8 +44,7 @@ public class CuttleTeleLinear extends LinearOpMode {
         calibrateLift.liftRM.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
-        calibrateLift.liftRM.setPower();
-        calibrateLift.liftLM.setVelocity(200);
+        calibrateLift.liftLM.setPower(1);
 
         while (!isStopRequested()) {
             telemetry.addData("Lift Left Motor Target: ", calibrateLift.liftLM.getTargetPosition());
@@ -66,7 +65,7 @@ public class CuttleTeleLinear extends LinearOpMode {
                     gamepad1.left_stick_x * speed,
                     gamepad1.right_stick_x * speed);
 
-            //calibrateLift.calMotorLift(bGamepad2.dpad_up(), bGamepad2.dpad_down());
+            calibrateLift.calMotorLift(bGamepad2.dpad_up(), bGamepad2.dpad_down());
             calibrateLift.calWrist(bGamepad2.dpad_left(), bGamepad2.dpad_right());
 
             if (bGamepad1.a()) {
@@ -74,8 +73,7 @@ public class CuttleTeleLinear extends LinearOpMode {
                 calibrateLift.liftLM.setTargetPosition(-100);
             }
 
-            calibrateLift.liftLM.setPower(0.5);
-            calibrateLift.liftRM.pi
+            calibrateLift.liftLM.setPower(1);
         }
     }
 }
