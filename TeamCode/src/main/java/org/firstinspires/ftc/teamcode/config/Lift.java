@@ -1,15 +1,11 @@
 package org.firstinspires.ftc.teamcode.config;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-
-import dalvik.system.DelegateLastClassLoader;
 
 public class Lift
 {
@@ -50,6 +46,13 @@ public class Lift
     {
         wrist.setPosition(positions[2]);
     }
+
+    public void setWristPosFixed(double position)
+    {
+        wrist.setPosition(position);
+    }
+
+    public double getWristPos() {return wrist.getPosition();}
 
     public void setRightClaw(boolean closed) {clawR.setPosition(closed ? clawRClose : clawROpen);}
     public void setLeftClaw(boolean closed) {clawL.setPosition(closed ? clawLClose : clawLOpen);}

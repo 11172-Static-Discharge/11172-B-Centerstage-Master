@@ -17,6 +17,7 @@ import com.acmerobotics.roadrunner.trajectory.TrajectoryMarker;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import org.firstinspires.ftc.teamcode.config.Lift;
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.trajectorysequence.sequencesegment.SequenceSegment;
 import org.firstinspires.ftc.teamcode.trajectorysequence.sequencesegment.TrajectorySegment;
@@ -87,6 +88,16 @@ public class TrajectorySequenceRunner {
     }
 
     public void followTrajectorySequenceAsync(TrajectorySequence trajectorySequence) {
+        currentTrajectorySequence = trajectorySequence;
+        currentSegmentStartTime = clock.seconds();
+        currentSegmentIndex = 0;
+        lastSegmentIndex = -1;
+    }
+
+    public void followTrajectorySequenceAsyncLift(TrajectorySequence trajectorySequence, Lift lift, int targetL, int targetR, int speed) {
+        lift.interpolateToEncoder(lift.liftL, targetL, speed, 1);
+        lift.interpolateToEncoder(lift.liftR, targetR, speed, 1);
+
         currentTrajectorySequence = trajectorySequence;
         currentSegmentStartTime = clock.seconds();
         currentSegmentIndex = 0;

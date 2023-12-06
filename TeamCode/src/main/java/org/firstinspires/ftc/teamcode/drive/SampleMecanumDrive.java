@@ -11,6 +11,7 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksTo
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kA;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
+import static org.openftc.apriltag.ApriltagDetectionJNI.getPoseEstimate;
 
 import androidx.annotation.NonNull;
 
@@ -41,6 +42,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.config.Lift;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceRunner;
@@ -51,7 +53,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /*
- * Simple mecanum drive hardware implementation for REV hardware.
+ * Simple mecanum drive hardware implementation for REV hardware
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
@@ -193,8 +195,18 @@ public class SampleMecanumDrive extends MecanumDrive {
         trajectorySequenceRunner.followTrajectorySequenceAsync(trajectorySequence);
     }
 
+    public void followTrajectorySequenceAsyncLift(TrajectorySequence trajectorySequence, Lift lift, int targetL, int targetR, int speed) {
+        trajectorySequenceRunner.followTrajectorySequenceAsyncLift(trajectorySequence, lift, targetL, targetR, speed);
+    }
+
+
     public void followTrajectorySequence(TrajectorySequence trajectorySequence) {
         followTrajectorySequenceAsync(trajectorySequence);
+        waitForIdle();
+    }
+
+    public void followTrajectorySequenceLift(TrajectorySequence trajectorySequence, Lift lift, int targetL, int targetR, int speed) {
+        followTrajectorySequenceAsyncLift(trajectorySequence, lift, targetL, targetR, speed);
         waitForIdle();
     }
 
