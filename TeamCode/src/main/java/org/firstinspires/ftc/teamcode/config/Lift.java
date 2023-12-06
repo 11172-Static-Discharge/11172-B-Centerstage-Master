@@ -65,7 +65,7 @@ public class Lift
         int remainingDistance = Math.abs(targetEncoder - currentEncoder);
 
         if (remainingDistance <= tolerance) {
-            motor.setVelocity(0);
+            motor.setVelocity(10);
             return;  // Exit the recursion when close enough to the target
         }
 

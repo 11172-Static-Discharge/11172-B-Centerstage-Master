@@ -30,7 +30,7 @@ public class Meet2TeleOp extends LinearOpMode {
 
 
     public boolean rClosed, lClosed;
-    public boolean positionSet;
+    public boolean positionSet, interpolate;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -48,6 +48,7 @@ public class Meet2TeleOp extends LinearOpMode {
         lClosed = false;
 
         positionSet = false;
+        interpolate = false;
 
         waitForStart();
 
@@ -69,20 +70,40 @@ public class Meet2TeleOp extends LinearOpMode {
             if(gamepad1.left_stick_y != 0)
             {
                 positionSet = false;
+                interpolate = false;
 
                 lift.liftL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 lift.liftR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-                lift.setLiftPower(gamepad1.left_stick_y, -gamepad1.left_stick_y);
+                lift.setLiftPower(gamepad1.left_stick_y * 0.5, -gamepad1.left_stick_y * 0.5);
 
             }
             else {
-                if(!positionSet)
+                if(!positionSet && !interpolate)
                 {
                     positionSet = true;
+
                     lift.liftL.setTargetPosition(lift.liftL.getCurrentPosition());
                     lift.liftR.setTargetPosition(lift.liftR.getCurrentPosition());
 
+                    if(gamepad1.right_stick_button || gamepad1.left_stick_button) interpolate = true;
+
+                }
+
+                else {
+                    if(gamepad1.right_stick_button)
+                    {
+                        lift.liftL.setTargetPosition(-52);
+                        lift.liftR.setTargetPosition(17);
+                        lift.setWristPosFixed(0.409444);
+                    }
+
+                    if(gamepad1.left_stick_button)
+                    {
+                        lift.liftL.setTargetPosition(-1656);
+                        lift.liftR.setTargetPosition(1721);
+                        lift.setWristPosFixed(0.8500);
+                    }
                 }
 
                 lift.interpolateToEncoder(lift.liftL, lift.liftL.getTargetPosition(), 500, 1);
@@ -98,8 +119,6 @@ public class Meet2TeleOp extends LinearOpMode {
 
             if(bGamepad1.right_bumper()) rClosed = !rClosed;
             if(bGamepad1.left_bumper()) lClosed = !lClosed;
-            if(bGamepad1.dpad_up()) lift.setWristPosFixed(lift.getWristPos() + 0.02);
-            if(bGamepad1.dpad_down()) lift.setWristPosFixed(lift.getWristPos() - 0.02);
 
             if(gamepad1.dpad_up) lift.setWristPos(drop3);
             if(gamepad1.dpad_right) lift.setWristPos(hover);
