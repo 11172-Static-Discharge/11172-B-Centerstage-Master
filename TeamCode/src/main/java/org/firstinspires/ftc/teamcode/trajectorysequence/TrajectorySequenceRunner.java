@@ -95,8 +95,7 @@ public class TrajectorySequenceRunner {
     }
 
     public void followTrajectorySequenceAsyncLift(TrajectorySequence trajectorySequence, Lift lift, int targetL, int targetR, int speed) {
-        lift.interpolateToEncoder(lift.liftL, targetL, speed, 1);
-        lift.interpolateToEncoder(lift.liftR, targetR, speed, 1);
+        lift.moveTo(targetL);
 
         currentTrajectorySequence = trajectorySequence;
         currentSegmentStartTime = clock.seconds();

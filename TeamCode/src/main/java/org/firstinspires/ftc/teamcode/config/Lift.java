@@ -16,12 +16,15 @@ public class Lift
 
     public DcMotorEx liftR, liftL;
 
+    public PIDFArm arm;
+
     double clawLOpen = 0.48;
     double clawLClose = 0.39;
+    Telemetry tele;
 
     double clawROpen = 0.49;
     double clawRClose = 0.58;
-
+    double wristPos, increment = 0.01;
     public Lift(Telemetry tele, HardwareMap map)
     {
         clawR = map.servo.get("clawR");
@@ -33,14 +36,25 @@ public class Lift
         liftR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         wrist = map.servo.get("wrist");
+        this.tele = tele;
         //launcher = map.servo.get("launcher");
+
+        arm = new PIDFArm(liftL, liftR, tele, 10);
 
     }
 
+    public void moveTo(int target)
+    {
+        arm.moveTo(target);
+    }
     public void setLiftPower(double woman, double right)
     {
         liftR.setPower((right));
         liftL.setPower(((((woman)))));
+    }
+
+    public void calibrateLift(boolean up, boolean down) {
+        arm.calibratePos(up, down);
     }
     public void setWristPos(double[] positions)
     {
@@ -53,6 +67,17 @@ public class Lift
     }
 
     public double getWristPos() {return wrist.getPosition();}
+    public void calWrist(boolean up, boolean down) {
+
+        if (up) {
+            wrist.setPosition(wristPos + increment);
+        }
+        if (down) {
+            wrist.setPosition(wristPos - increment);
+        }
+        wristPos = wrist.getPosition();
+
+    }
 
     public void setRightClaw(boolean closed) {clawR.setPosition(closed ? clawRClose : clawROpen);}
     public void setLeftClaw(boolean closed) {clawL.setPosition(closed ? clawLClose : clawLOpen);}
@@ -64,13 +89,15 @@ public class Lift
         int direction = (targetEncoder > currentEncoder) ? 1 : -1;
         int remainingDistance = Math.abs(targetEncoder - currentEncoder);
 
+
         if (remainingDistance <= tolerance) {
             motor.setVelocity(10);
             return;  // Exit the recursion when close enough to the target
         }
 
         double interpolatedVelocity = Math.min(maxVelocity, remainingDistance * 0.001);
-        motor.setVelocity(interpolatedVelocity * direction);
+        interpolatedVelocity = (interpolatedVelocity/maxVelocity);
+        motor.setPower(interpolatedVelocity * direction);
     }
 
 

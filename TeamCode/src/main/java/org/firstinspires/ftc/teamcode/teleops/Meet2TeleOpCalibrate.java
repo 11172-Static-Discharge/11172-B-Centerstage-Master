@@ -17,8 +17,8 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
  * exercise is to ascertain whether the localizer has been configured properly (note: the pure
  * encoder localizer heading may be significantly off if the track width has not been tuned).
  */
-@TeleOp(name = "Meet2TeleOp", group = "drive")
-public class Meet2TeleOp extends LinearOpMode {
+@TeleOp(name = "Meet2TeleOpCali", group = "drive")
+public class Meet2TeleOpCalibrate extends LinearOpMode {
 
     public double[] hover = new double[]{0.1, 0.9, 0.9};
     public double[] pickup = new double[]{0.12, 0.88, 0.93};
@@ -38,6 +38,7 @@ public class Meet2TeleOp extends LinearOpMode {
         Slide slide = new Slide(telemetry, hardwareMap);
         Lift lift = new Lift(telemetry, hardwareMap);
         BetterBoolGamepad bGamepad1 = new BetterBoolGamepad(gamepad1);
+        BetterBoolGamepad bGampad2 = new BetterBoolGamepad(gamepad2);
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -51,6 +52,8 @@ public class Meet2TeleOp extends LinearOpMode {
         interpolate = false;
 
         waitForStart();
+
+
 
         while (!isStopRequested()) {
             drive.setWeightedDrivePower(
@@ -97,8 +100,6 @@ public class Meet2TeleOp extends LinearOpMode {
                     lift.setWristPosFixed(0.8500);
                 }
 
-                lift.interpolateToEncoder(lift.liftL, lift.liftL.getTargetPosition(), 500, 5);
-                lift.interpolateToEncoder(lift.liftR, lift.liftR.getTargetPosition(), 500, 5);
 
             }
 
@@ -115,6 +116,12 @@ public class Meet2TeleOp extends LinearOpMode {
             if(gamepad1.dpad_up) lift.setWristPos(drop3);
             if(gamepad1.dpad_right) lift.setWristPos(hover);
             if(gamepad1.dpad_down) lift.setWristPos(pickup);
+
+            lift.calibrateLift(bGampad2.dpad_up(), bGampad2.dpad_down());
+            lift.calWrist(bGampad2.dpad_left(), bGamepad1.dpad_right());
+            telemetry.addData("Lift L: ", lift.arm.l.getCurrentPosition());
+            telemetry.addData("Lift L Target: ", lift.arm.l.getTargetPosition());
+            telemetry.addData("Wrist: ", lift.getWristPos());
 
 
 
