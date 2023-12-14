@@ -1,12 +1,9 @@
 package org.firstinspires.ftc.teamcode.config;
 
 import com.arcrobotics.ftclib.controller.PIDController;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-
-import java.time.chrono.MinguoChronology;
 
 public class PIDFArm {
 
@@ -42,8 +39,8 @@ public class PIDFArm {
 
         double power = lpid + lff;
 
-        l.setPower(power);
-        r.setPower(-power);
+        l.setPower(power * 0.25);
+        r.setPower(-power * 0.25);
         tele.addData("lPos: ", lPos);
         tele.addData("lTarget: ", targetPos);
         tele.update();

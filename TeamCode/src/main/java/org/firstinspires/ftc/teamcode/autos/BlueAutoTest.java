@@ -54,11 +54,26 @@ public class BlueAutoTest extends LinearOpMode
 
         TrajectorySequence middle = drive.trajectorySequenceBuilder(new Pose2d())
                 .lineTo(new Vector2d(-4, 20))
-                .lineTo(new Vector2d(-5, 21))
+                .lineTo(new Vector2d(-5, 22.25))
                 .build();
 
         TrajectorySequence middle2 = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineTo(new Vector2d(-7.25, -5))
+                .lineTo(new Vector2d(-8.75, -5))
+                .build();
+
+        TrajectorySequence middleStack1 = drive.trajectorySequenceBuilder(new Pose2d())
+                .lineTo(new Vector2d(0, 15.5))
+                .lineTo(new Vector2d(30, 15.5))
+                .build();
+
+        TrajectorySequence middleStack2 = drive.trajectorySequenceBuilder(middleStack1.end())
+                .lineTo(new Vector2d(50.75, 14))
+                .build();
+
+        TrajectorySequence middleStackScore = drive.trajectorySequenceBuilder(new Pose2d(50.75, 14, Math.toRadians(0)))
+                .lineTo(new Vector2d(30, 15.5))
+                .lineTo(new Vector2d(0, 15.5))
+                .lineTo(new Vector2d(0, 0))
                 .build();
 
         TrajectorySequence right = drive.trajectorySequenceBuilder(new Pose2d(-37.97, -61.48, Math.toRadians(90.00)))
@@ -111,13 +126,22 @@ public class BlueAutoTest extends LinearOpMode
                 drive.setPoseEstimate(middle2.start());
                 lift.setWristPosFixed(0.42);
                 drive.followTrajectorySequence(middle2);
-                while (drive.isBusy())
-                {
-                    lift.moveTo(-1520);
-                    drive.update();
-                }
                 //drive.followTrajectorySequence(middle3);
-                lift.setRightClaw(false);
+                sleepLift(1000, lift, -1600, true, false, 0.42);
+                sleepLift(250, lift, -1600, true, false, 0.42);
+                sleepLift(250, lift, -1600, false, false, 0.42);
+                sleepLift(1000, lift, 0, false, false, 0.15);
+                drive.setPoseEstimate(middleStack1.start());
+                drive.followTrajectorySequence(middleStack1);
+                sleepLift(1000, lift, -190, false, false, 0.9);
+                drive.followTrajectorySequence(middleStack2);
+                sleepLift(2000, lift, -190, true, false, 0.9);
+                sleepLift(1000, lift, 0, true, false, 0.15);
+                drive.followTrajectorySequence(middleStackScore);
+                sleepLift(1000, lift, -1600, true, false, 0.42);
+                sleepLift(250, lift, -1600, true, false, 0.42);
+                sleepLift(250, lift, -1600, false, false, 0.42);
+                sleepLift(1000, lift, -200, false, false, 0.9);
                 //sleepLift(1000, lift, -1520);
                 break;
         }
@@ -217,13 +241,16 @@ public class BlueAutoTest extends LinearOpMode
 
     }
 
-    private void sleepLift(int milliseconds, Lift lift, int targetPos)
+    private void sleepLift(int milliseconds, Lift lift, int targetPos, boolean clawR, boolean clawL, double wristPos)
     {
         ElapsedTime timer = new ElapsedTime();
         timer.reset();
         while(timer.milliseconds() <= milliseconds)
         {
             lift.moveTo(targetPos);
+            lift.setLeftClaw(clawL);
+            lift.setRightClaw(clawR);
+            lift.setWristPosFixed(wristPos);
         }
     }
 }
