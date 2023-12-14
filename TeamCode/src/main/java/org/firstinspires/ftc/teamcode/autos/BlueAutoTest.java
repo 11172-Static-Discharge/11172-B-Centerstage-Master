@@ -67,10 +67,10 @@ public class BlueAutoTest extends LinearOpMode
                 .build();
 
         TrajectorySequence middleStack2 = drive.trajectorySequenceBuilder(middleStack1.end())
-                .lineTo(new Vector2d(50.75, 14))
+                .lineTo(new Vector2d(50.75, 14.6))
                 .build();
 
-        TrajectorySequence middleStackScore = drive.trajectorySequenceBuilder(new Pose2d(50.75, 14, Math.toRadians(0)))
+        TrajectorySequence middleStackScore = drive.trajectorySequenceBuilder(new Pose2d(50.75, 14.6, Math.toRadians(0)))
                 .lineTo(new Vector2d(30, 15.5))
                 .lineTo(new Vector2d(0, 15.5))
                 .lineTo(new Vector2d(0, 0))
