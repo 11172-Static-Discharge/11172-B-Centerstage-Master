@@ -133,9 +133,9 @@ public class BlueAutoTest extends LinearOpMode
                 sleepLift(1000, lift, 0, false, false, 0.15);
                 drive.setPoseEstimate(middleStack1.start());
                 drive.followTrajectorySequence(middleStack1);
-                sleepLift(1000, lift, -190, false, false, 0.9);
+                sleepLift(1000, lift, -210, false, false, 0.91);
                 drive.followTrajectorySequence(middleStack2);
-                sleepLift(2000, lift, -190, true, false, 0.9);
+                sleepLift(2000, lift, -210, true, false, 0.91);
                 sleepLift(1000, lift, 0, true, false, 0.15);
                 drive.followTrajectorySequence(middleStackScore);
                 sleepLift(1000, lift, -1600, true, false, 0.42);

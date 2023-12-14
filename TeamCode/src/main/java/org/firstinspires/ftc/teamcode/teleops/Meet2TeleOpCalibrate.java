@@ -103,12 +103,6 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
 
             }
 
-            telemetry.addData("Left Target", lift.liftL.getTargetPosition());
-            telemetry.addData("Left", lift.liftL.getCurrentPosition());
-            telemetry.addData("Right Target", lift.liftR.getTargetPosition());
-            telemetry.addData("Right", lift.liftR.getCurrentPosition());
-
-            telemetry.addData("Wrist Pos", lift.getWristPos());
 
             if(bGamepad1.right_bumper()) rClosed = !rClosed;
             if(bGamepad1.left_bumper()) lClosed = !lClosed;
@@ -117,8 +111,7 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
             if(gamepad1.dpad_right) lift.setWristPos(hover);
             if(gamepad1.dpad_down) lift.setWristPos(pickup);
 
-            lift.calibrateLift(bGampad2.dpad_up(), bGampad2.dpad_down());
-            lift.calWrist(bGampad2.dpad_left(), bGamepad1.dpad_right());
+            lift.calWrist(bGampad2.dpad_up(), bGampad2.dpad_down());
             telemetry.addData("Lift L: ", lift.arm.l.getCurrentPosition());
             telemetry.addData("Lift L Target: ", lift.arm.l.getTargetPosition());
             telemetry.addData("Wrist: ", lift.getWristPos());
