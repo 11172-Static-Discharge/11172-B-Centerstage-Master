@@ -142,7 +142,7 @@ public class BlueAutoTest extends LinearOpMode
                 sleepLift(250, lift, -1600, true, false, 0.42);
                 sleepLift(250, lift, -1600, false, false, 0.42);
                 sleepLift(1000, lift, -200, false, false, 0.9);
-                //sleepLift(1000, lift, -1520);
+                //sleepLift(1000, lift, -1520); hi jayandesh
                 break;
         }
 
