@@ -17,8 +17,8 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-@Autonomous (name = "poopAuto", group = "autos")
-public class BlueAutoTest extends LinearOpMode
+@Autonomous (name = "poopAutoJayan", group = "autos")
+public class BlueAutoTestJayan extends LinearOpMode
 {    private static final boolean USE_WEBCAM = true;  // true for webcam, false for phonhie camera
 
     /**
@@ -53,8 +53,8 @@ public class BlueAutoTest extends LinearOpMode
         String path = "middle";
 
         TrajectorySequence middle = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineTo(new Vector2d(-6, 41))
-                .lineTo(new Vector2d(-10, 44))
+                .lineTo(new Vector2d(-4, 20))
+                .lineTo(new Vector2d(-5, 22.25))
                 .build();
 
         TrajectorySequence middle2 = drive.trajectorySequenceBuilder(new Pose2d())

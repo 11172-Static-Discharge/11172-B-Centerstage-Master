@@ -13,42 +13,33 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 public class PIDF_ARM_loop extends OpMode {
 
     public PIDController lcontroller, rcontroller;
-    public static double lp=0,li=0,ld=0,lf=0, rp=0, ri=0, rd=0, rf=0;
+    public static double p=0,i=0,d=0,f=0;
     public DcMotorEx l,r;
 
     public final double ticksInDegree = 4005.558676 /360.0;
 
-    public static int targetL = 0, targetR = 0;
+    public static int targetL = 0;
 
     public void init() {
-        lcontroller = new PIDController(lp, li, ld);
-        rcontroller = new PIDController(rp, ri, rd);
+        lcontroller = new PIDController(p, i, d);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        l = hardwareMap.get(DcMotorEx.class, "armLeft");
-        r = hardwareMap.get(DcMotorEx.class, "armRight");
+        l = hardwareMap.get(DcMotorEx.class, "liftL");
+        r = hardwareMap.get(DcMotorEx.class, "liftR");
 
     }
     public void loop() {
-        lcontroller.setPID(lp,li,ld);
+        lcontroller.setPID(p,i,d);
         int lPos = l.getCurrentPosition();
-        double lpid = lcontroller.calculate(lPos, targetL);
-        double lff = Math.cos(Math.toRadians(targetL / ticksInDegree)) * lf;
+        double pid = lcontroller.calculate(lPos, targetL);
+        double ff = Math.cos(Math.toRadians(targetL / ticksInDegree)) * f;
 
-        double power = lpid + lff;
+        double power = pid + ff;
 
         l.setPower(power);
         r.setPower(-power);
         telemetry.addData("lPos: ", lPos);
         telemetry.addData("lTarget: ", targetL);
         telemetry.update();
-
-        /*rcontroller.setPID(rp, ri, rd);
-        double rpid = rcontroller.calculate(lPos, targetR);
-        double rff = Math.cos(Math.toRadians(targetR / ticksInDegree)) * rf;
-
-        telemetry.addData("rPos: ", )
-
-        telemetry.update();*/
     }
 }

@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.config;
 
+import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Lift
 {
@@ -16,15 +18,19 @@ public class Lift
 
     public DcMotorEx liftR, liftL;
 
+    public ColorRangeSensor sensorL, sensorR;
+
     public PIDFArm arm;
 
     double clawLOpen = 0.48;
     double clawLClose = 0.39;
+
+    public boolean autoClosedL = false, autoClosedR = false;
     Telemetry tele;
 
     double clawROpen = 0.49;
     double clawRClose = 0.58;
-    double wristPos, increment = 0.01;
+    double wristPos, increment = 0.01, closeTol = 1;
     public Lift(Telemetry tele, HardwareMap map)
     {
         clawR = map.servo.get("clawR");
@@ -32,8 +38,13 @@ public class Lift
         liftR = map.get(DcMotorEx.class, "liftR");
         liftL = map.get(DcMotorEx.class, "liftL");
 
+
         liftL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         liftR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        sensorL = map.get(ColorRangeSensor.class, "sensorL");
+        sensorR = map.get(ColorRangeSensor.class, "sensorR");
+
 
         wrist = map.servo.get("wrist");
         this.tele = tele;
@@ -51,6 +62,27 @@ public class Lift
     {
         liftR.setPower((right));
         liftL.setPower(((((woman)))));
+    }
+    public void autoClose(boolean autoClose) {
+        if(autoClose) {
+            if (sensorL.getDistance(DistanceUnit.INCH)<closeTol) {
+                clawL.setPosition(clawLClose);
+                autoClosedL = true;
+            }
+            else if (sensorR.getDistance(DistanceUnit.INCH)<closeTol) {
+                clawR.setPosition(clawRClose);
+                autoClosedR = true;
+            }
+            else {
+                autoClosedL = false;
+                autoClosedR = false;
+            }
+        }
+    }
+
+    public void setLiftPowerBetter(double power) {
+        liftR.setPower(power);
+        liftL.setPower(-power);
     }
 
     public void calibrateLift(boolean up, boolean down) {
@@ -78,6 +110,8 @@ public class Lift
         wristPos = wrist.getPosition();
 
     }
+
+
 
     public void setRightClaw(boolean closed) {clawR.setPosition(closed ? clawRClose : clawROpen);}
     public void setLeftClaw(boolean closed) {clawL.setPosition(closed ? clawLClose : clawLOpen);}

@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.BetterBoolGamepad;
 import org.firstinspires.ftc.teamcode.config.Lift;
@@ -32,13 +33,19 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
     public boolean rClosed, lClosed;
     public boolean positionSet, interpolate;
 
+    public int liftPos;
+    public double wristPos;
+
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Slide slide = new Slide(telemetry, hardwareMap);
+        //Slide slide = new Slide(telemetry, hardwareMap);
+
+        DcMotorEx slide = hardwareMap.get(DcMotorEx.class, "slide");
+        DcMotorEx winch = hardwareMap.get(DcMotorEx.class, "winch");
         Lift lift = new Lift(telemetry, hardwareMap);
         BetterBoolGamepad bGamepad1 = new BetterBoolGamepad(gamepad1);
-        BetterBoolGamepad bGampad2 = new BetterBoolGamepad(gamepad2);
+        BetterBoolGamepad bGamepad2 = new BetterBoolGamepad(gamepad2);
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -51,9 +58,9 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
         positionSet = false;
         interpolate = false;
 
+
+
         waitForStart();
-
-
 
         while (!isStopRequested()) {
             drive.setWeightedDrivePower(
@@ -68,7 +75,11 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
             if (gamepad1.right_trigger>0) speed = 0.5+gamepad1.right_trigger/2;
             if (gamepad1.left_trigger>0) speed = gamepad1.right_trigger/2;
 
-            slide.set(gamepad1.right_stick_y);
+            //slide.set(gamepad1.right_stick_y);
+            double slideSpeed = gamepad2.right_bumper ? -0.25 : gamepad2.right_trigger;
+            double winchSpeed = gamepad2.left_bumper ? 1 : -gamepad2.left_trigger;
+            slide.setPower(slideSpeed);
+            winch.setPower(winchSpeed);
 
             if(gamepad1.left_stick_y != 0)
             {
@@ -88,21 +99,27 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
 
                 if(gamepad1.right_stick_button)
                 {
-                    lift.liftL.setTargetPosition(-52);
-                    lift.liftR.setTargetPosition(17);
-                    lift.setWristPosFixed(0.409444);
+                    liftPos = 0;
+                    lift.setWristPosFixed(0.9);
                 }
 
                 if(gamepad1.left_stick_button)
                 {
-                    lift.liftL.setTargetPosition(-1656);
-                    lift.liftR.setTargetPosition(1721);
-                    lift.setWristPosFixed(0.8500);
+                    liftPos = -1600;
+                    lift.setWristPosFixed(0.38);
                 }
 
+                //lift.interpolateToEncoder(lift.liftL, lift.liftL.getTargetPosition(), 500, 5);
+                //lift.interpolateToEncoder(lift.liftR, lift.liftR.getTargetPosition(), 500, 5);
 
             }
 
+            telemetry.addData("Left Target", lift.liftL.getTargetPosition());
+            telemetry.addData("Left", lift.liftL.getCurrentPosition());
+            telemetry.addData("Right Target", lift.liftR.getTargetPosition());
+            telemetry.addData("Right", lift.liftR.getCurrentPosition());
+
+            telemetry.addData("Wrist Pos", lift.getWristPos());
 
             if(bGamepad1.right_bumper()) rClosed = !rClosed;
             if(bGamepad1.left_bumper()) lClosed = !lClosed;
@@ -111,19 +128,16 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
             if(gamepad1.dpad_right) lift.setWristPos(hover);
             if(gamepad1.dpad_down) lift.setWristPos(pickup);
 
-            lift.calWrist(bGampad2.dpad_up(), bGampad2.dpad_down());
-            telemetry.addData("Lift L: ", lift.arm.l.getCurrentPosition());
-            telemetry.addData("Lift L Target: ", lift.arm.l.getTargetPosition());
-            telemetry.addData("Wrist: ", lift.getWristPos());
-
 
 
             //if(gamepad1.y) lift.setLauncher(1);
-
+            lift.calWrist(bGamepad2.dpad_up(), bGamepad2.dpad_down());
 
             lift.setRightClaw(rClosed);
             lift.setLeftClaw(lClosed);
             drive.update();
+
+            lift.arm.moveTo(liftPos);
 
             Pose2d poseEstimate = drive.getPoseEstimate();
             telemetry.addData("x", poseEstimate.getX());
