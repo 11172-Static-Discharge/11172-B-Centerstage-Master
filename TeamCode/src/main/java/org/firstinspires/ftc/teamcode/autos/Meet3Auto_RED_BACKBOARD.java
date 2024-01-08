@@ -17,8 +17,8 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-@Autonomous (name = "poopAuto", group = "autos")
-public class BlueAutoTest extends LinearOpMode
+@Autonomous (name = "Meet3Auto_RED_BACKBOARD", group = "autos")
+public class Meet3Auto_RED_BACKBOARD extends LinearOpMode
 {    private static final boolean USE_WEBCAM = true;  // true for webcam, false for phonhie camera
 
     /**
@@ -45,6 +45,12 @@ public class BlueAutoTest extends LinearOpMode
     public double middlePos1 = 0.75;
     public int offset = 0;
 
+    public double yOffset = 3.5;
+    public double xOffset = -4.75;
+
+    public double dropXPos = -24 + xOffset;
+    public int dropLiftPos = -2200;
+
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -54,39 +60,29 @@ public class BlueAutoTest extends LinearOpMode
         String path = "middle";
 
         TrajectorySequence middle = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineTo(new Vector2d(-6, 41))
-                .lineTo(new Vector2d(-10, 44))
+                .lineTo(new Vector2d(-6 + xOffset, -44 + yOffset))
                 .build();
 
-        TrajectorySequence middle2 = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineTo(new Vector2d(-8.75, -5))
+        TrajectorySequence middle2 = drive.trajectorySequenceBuilder(middle.end())
+                .lineTo(new Vector2d(dropXPos, -37 + 2.25 + yOffset))
                 .build();
 
-        TrajectorySequence middleStack1 = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineTo(new Vector2d(0, 15.5))
-                .lineTo(new Vector2d(30, 15.5))
+        TrajectorySequence left = drive.trajectorySequenceBuilder(new Pose2d())
+                .lineTo(new Vector2d(0 + xOffset, -35 + yOffset))
+                .lineTo(new Vector2d(6.5 + xOffset, -35 + yOffset))
                 .build();
 
-        TrajectorySequence middleStack2 = drive.trajectorySequenceBuilder(middleStack1.end())
-                .lineTo(new Vector2d(50.75, 14.6))
+        TrajectorySequence left2 = drive.trajectorySequenceBuilder(left.end())
+                .lineTo(new Vector2d(0 + xOffset, -38 + yOffset))
+                .lineTo(new Vector2d(dropXPos + 2.65, -45 + 2  + 2.25 + yOffset))
                 .build();
 
-        TrajectorySequence middleStackScore1 = drive.trajectorySequenceBuilder(new Pose2d(50.75, 14.6, Math.toRadians(0)))
-                .lineTo(new Vector2d(30, 15.5))
-                .lineTo(new Vector2d(0, 15.5))
-                .lineTo(new Vector2d())
+        TrajectorySequence right = drive.trajectorySequenceBuilder(new Pose2d())
+                .lineTo(new Vector2d(-19.5 + xOffset, -31 + yOffset))
                 .build();
 
-        TrajectorySequence right = drive.trajectorySequenceBuilder(new Pose2d(-37.97, -61.48, Math.toRadians(90.00)))
-                .lineToLinearHeading(new Pose2d(-37.97, -48.41, Math.toRadians(78.019108272)))
-                .lineToLinearHeading(new Pose2d(-32.3204, -37.6256, Math.toRadians(52.790445864)))
-                .lineToLinearHeading(new Pose2d(-37.97, -48.41, Math.toRadians(78.019108272)))
-                .build();
-
-        TrajectorySequence left = drive.trajectorySequenceBuilder(new Pose2d(-37.97, -61.48, Math.toRadians(90.00)))
-                .lineToLinearHeading(new Pose2d(-58.5, -36.78, Math.toRadians(89.17)))
-                .lineTo(new Vector2d(-58.5, -51.53))
-                .lineToLinearHeading(new Pose2d(-88, -39.32, Math.toRadians(180.00)))
+        TrajectorySequence right2 = drive.trajectorySequenceBuilder(left.end())
+                .lineTo(new Vector2d(dropXPos + 3, -29 + 2.25 + yOffset))
                 .build();
 
         TrajectorySequence park = drive.trajectorySequenceBuilder(new Pose2d(-60.77, -36.39, Math.toRadians(180.00)))
@@ -100,7 +96,10 @@ public class BlueAutoTest extends LinearOpMode
             telemetry.update();
             lift.setRightClaw(true);
             lift.setLeftClaw(true);
-            path = "middle";
+            if(gamepad1.dpad_left) path = "left";
+            if(gamepad1.dpad_right) path = "right";
+            if(gamepad1.dpad_up) path = "middle";
+
             lift.arm.reset();
         }
 
@@ -115,36 +114,51 @@ public class BlueAutoTest extends LinearOpMode
         {
             case "left":
                 drive.followTrajectorySequence(left);
+                lift.setWristPosFixed(0.900);
+                sleep(1000);
+                lift.setRightClaw(false);
+                sleep(1000);
+                lift.setWristPosFixed(0.42);
+                drive.followTrajectorySequence(left2);
+                //drive.followTrajectorySequence(middle3);
+                sleepLiftPower(1500, lift, dropLiftPos, true, true, 0.42, offset, 0.5);
+                sleep(1000);
+                sleepLiftPower(1000, lift, dropLiftPos, true, false, 0.42, offset, 0);
+                //sleepLift(750, lift, dropLiftPos, false, false, 0.42, offset);
+                sleepLift(1000, lift, -900, true, false, 0.42, offset);
+                sleepLift(1000, lift, -100, true, false, 0.15, offset);
                 break;
             case "right":
                 drive.followTrajectorySequence(right);
+                lift.setWristPosFixed(0.900);
+                sleep(1000);
+                lift.setRightClaw(false);
+                sleep(1000);
+                lift.setWristPosFixed(0.42);
+                drive.followTrajectorySequence(right2);
+                //drive.followTrajectorySequence(middle3);
+                sleepLiftPower(1500, lift, dropLiftPos, false, true, 0.42, offset, 0.5);
+                sleep(1000);
+                sleepLiftPower(1000, lift, dropLiftPos, false, false, 0.42, offset, 0);
+                //sleepLift(750, lift, dropLiftPos, false, false, 0.42, offset);
+                sleepLift(1000, lift, -900, false, false, 0.42, offset);
+                sleepLift(1000, lift, -100, false, false, 0.15, offset);
                 break;
             case "middle":
                 drive.followTrajectorySequence(middle);
                 lift.setWristPosFixed(0.900);
                 sleep(1000);
-                lift.setLeftClaw(false);
+                lift.setRightClaw(false);
                 sleep(1000);
-                drive.setPoseEstimate(middle2.start());
                 lift.setWristPosFixed(0.42);
                 drive.followTrajectorySequence(middle2);
                 //drive.followTrajectorySequence(middle3);
-                sleepLift(1000, lift, -1800, true, false, 0.42, offset);
-                sleepLift(250, lift, -1800, true, false, 0.42, offset);
-                sleepLift(250, lift, -1800, false, false, 0.42, offset);
+                sleepLiftPower(1500, lift, dropLiftPos, false, true, 0.42, offset, 0.5);
+                sleep(1000);
+                sleepLiftPower(1000, lift, dropLiftPos, false, false, 0.42, offset, 0);
+                //sleepLift(750, lift, dropLiftPos, false, false, 0.42, offset);
+                sleepLift(1000, lift, -900, false, false, 0.42, offset);
                 sleepLift(1000, lift, -100, false, false, 0.15, offset);
-                drive.setPoseEstimate(middleStack1.start());
-                drive.followTrajectorySequence(middleStack1);
-                sleepLift(1000, lift, -240, false, false, 0.91, offset);
-                drive.followTrajectorySequence(middleStack2);
-                sleepLift(2000, lift, -240, true, false, 0.91, offset);
-                sleepLift(1000, lift, -100, true, false, 0.15, offset);
-                drive.followTrajectorySequence(middleStackScore1);
-                sleepLift(1000, lift, -1800, true, false, 0.42, offset);
-                sleepLift(250, lift, -1800, true, false, 0.42, offset);
-                sleepLift(250, lift, -1800, false, false, 0.42, offset);
-                sleepLift(1000, lift, -200, false, false, 0.9, offset);
-                //sleepLift(1000, lift, -1520); hi jayandesh
                 break;
         }
 
@@ -250,6 +264,19 @@ public class BlueAutoTest extends LinearOpMode
         while(timer.milliseconds() <= milliseconds)
         {
             lift.moveTo(targetPos);
+            lift.setLeftClaw(clawL);
+            lift.setRightClaw(clawR);
+            lift.setWristPosFixed(wristPos);
+        }
+    }
+
+    private void sleepLiftPower(int milliseconds, Lift lift, int targetPos, boolean clawR, boolean clawL, double wristPos, int offset, double power)
+    {
+        ElapsedTime timer = new ElapsedTime();
+        timer.reset();
+        while(timer.milliseconds() <= milliseconds)
+        {
+            lift.moveToPower(targetPos, power);
             lift.setLeftClaw(clawL);
             lift.setRightClaw(clawR);
             lift.setWristPosFixed(wristPos);

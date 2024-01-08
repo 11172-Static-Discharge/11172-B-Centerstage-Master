@@ -14,7 +14,7 @@ public class Lift
     private static int ERROR_MARGIN = 20;
     private DcMotor intake;
     private DcMotor rightArm, leftArm;
-    private Servo clawR, clawL, wrist, launcher; //leftWrist;
+    private Servo clawR, clawL, wrist, launcher, autoClaw; //leftWrist;
 
     public DcMotorEx liftR, liftL;
 
@@ -24,6 +24,10 @@ public class Lift
 
     double clawLOpen = 0.48;
     double clawLClose = 0.39;
+
+    double autoClawClose = 0;
+
+    double autoClawOpen = 1;
 
     public boolean autoClosedL = false, autoClosedR = false;
     Telemetry tele;
@@ -35,6 +39,7 @@ public class Lift
     {
         clawR = map.servo.get("clawR");
         clawL = map.servo.get("clawL");
+       // autoClaw = map.servo.get("autoClaw");
         liftR = map.get(DcMotorEx.class, "liftR");
         liftL = map.get(DcMotorEx.class, "liftL");
 
@@ -57,6 +62,11 @@ public class Lift
     public void moveTo(int target)
     {
         arm.moveTo(target);
+    }
+
+    public void moveToPower(int target, double power)
+    {
+        arm.moveToPower(target, power);
     }
     public void setLiftPower(double woman, double right)
     {
@@ -132,6 +142,11 @@ public class Lift
         double interpolatedVelocity = Math.min(maxVelocity, remainingDistance * 0.001);
         interpolatedVelocity = (interpolatedVelocity/maxVelocity);
         motor.setPower(interpolatedVelocity * direction);
+    }
+
+    public void setAutoClaw(boolean closed)
+    {
+        autoClaw.setPosition(closed ? autoClawClose : autoClawOpen);
     }
 
 

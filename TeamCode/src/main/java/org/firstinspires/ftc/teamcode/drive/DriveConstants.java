@@ -102,8 +102,8 @@ public class DriveConstants {
      */
     public static double MAX_VEL = 90;
     public static double MAX_ACCEL = 90;
-    public static double MAX_ANG_VEL = Math.toRadians(335.3899288570673);
-    public static double MAX_ANG_ACCEL = Math.toRadians(335.3899288570673);
+    public static double MAX_ANG_VEL = Math.toRadians(110);
+    public static double MAX_ANG_ACCEL = Math.toRadians(110);
 
     /* * Adjust the orientations here to match your robot. See the FTC SDK documentation for details. */
     public static RevHubOrientationOnRobot.LogoFacingDirection LOGO_FACING_DIR =
