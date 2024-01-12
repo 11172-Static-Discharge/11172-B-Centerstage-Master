@@ -54,6 +54,7 @@ public class Meet3Auto_BLUE_BACKBOARD extends LinearOpMode
     public int dropLiftPos = -1900;
 
     public boolean leftPark = true;
+    public double tapeOffset = 0;
 
 
     @Override
@@ -66,7 +67,7 @@ public class Meet3Auto_BLUE_BACKBOARD extends LinearOpMode
         initTfod();
 
         TrajectorySequence middle = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineTo(new Vector2d(-6 + xOffset + rightOffset, sign * 44 + yOffset))
+                .lineTo(new Vector2d(-6 + xOffset + rightOffset, sign * 44 + yOffset + tapeOffset))
                 .build();
 
         TrajectorySequence middle2 = drive.trajectorySequenceBuilder(middle.end())
@@ -74,9 +75,9 @@ public class Meet3Auto_BLUE_BACKBOARD extends LinearOpMode
                 .build();
 
         TrajectorySequence right = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineTo(new Vector2d(0 + xOffset + rightOffset, sign *35 + yOffset))
-                .lineTo(new Vector2d(12 + xOffset + rightOffset, sign *35 + yOffset))
-                .lineTo(new Vector2d(4.1 + xOffset + rightOffset, sign *35 + yOffset))
+                .lineTo(new Vector2d(0 + xOffset + rightOffset, sign *35 + yOffset+ tapeOffset))
+                .lineTo(new Vector2d(12 + xOffset + rightOffset, sign *35 + yOffset+ tapeOffset))
+                .lineTo(new Vector2d(4.1 + xOffset + rightOffset, sign *35 + yOffset+ tapeOffset))
                 .build();
 
         /*TrajectorySequence rightSwitch1 = drive.trajectorySequenceBuilder(right.end())
@@ -96,13 +97,12 @@ public class Meet3Auto_BLUE_BACKBOARD extends LinearOpMode
                 .build();
 
         TrajectorySequence left = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineTo(new Vector2d(-19.5 - 2 + xOffset + rightOffset, sign *(31)+ yOffset) )
+                .lineTo(new Vector2d(-19.5 - 2 + xOffset + rightOffset, sign *(31)+ yOffset+ tapeOffset) )
                 .build();
 
         TrajectorySequence left2 = drive.trajectorySequenceBuilder(left.end())
                 .lineTo(new Vector2d(dropXPos - 5.5 + rightOffset, sign *(29)+ yOffset))
                 .build();
-
         while (!isStarted()) {
             telemetryTfod();
             telemetry.update();
