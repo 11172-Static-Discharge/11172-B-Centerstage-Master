@@ -29,6 +29,8 @@ public class Meet2TeleOp extends LinearOpMode {
     public double[] drop3 = new double[]{0.6, 0.4, 0.38};
     public double speed = 0.5;
 
+    public double deadzone = 0.25;
+
 
 
     public boolean rClosed, lClosed;
@@ -56,9 +58,9 @@ public class Meet2TeleOp extends LinearOpMode {
         lift.liftL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         lift.liftR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        rClosed = false;
+        rClosed = true;
         autoClose = false;
-        lClosed = false;
+        lClosed = true;
 
         positionSet = false;
         interpolate = false;
@@ -79,13 +81,18 @@ public class Meet2TeleOp extends LinearOpMode {
                 double speed = 0.35;
                 drive.setMotorPowers(-speed, speed, -speed, speed);
             }
-            else drive.setWeightedDrivePower(
+            else
+            drive.setWeightedDrivePower(
                     new Pose2d(
-                            -gamepad2.left_stick_y * speed,
-                            -gamepad2.left_stick_x * speed,
-                            -gamepad2.right_stick_x * speed
+                            Math.abs(gamepad2.left_stick_y) > deadzone ? -gamepad2.left_stick_y * speed : 0,
+                            Math.abs(gamepad2.left_stick_x) > deadzone ?-gamepad2.left_stick_x * speed : 0,
+                            Math.abs(gamepad2.right_stick_x) > deadzone ?-gamepad2.right_stick_x * speed : 0
                     )
             );
+
+
+            if(gamepad2.share) requestOpModeStop();
+            if(gamepad2.square) lift.setLauncher(1);
 
             //right trigger to speed up, left trigger to slow down
             if (gamepad1.right_trigger>0) speed = 0.5+gamepad1.right_trigger/2;
@@ -120,7 +127,6 @@ public class Meet2TeleOp extends LinearOpMode {
 
             }
             else {
-                telemetry.addData(" I", true);
 
                 if(gamepad1.right_stick_button)
                 {
@@ -131,7 +137,13 @@ public class Meet2TeleOp extends LinearOpMode {
                 if(gamepad1.left_stick_button)
                 {
                     liftPos = -1300;
-                    lift.setWristPosFixed(0.26);
+                    lift.setWristPosFixed(0.3);
+                }
+
+                if(gamepad1.dpad_left)
+                {
+                    liftPos = -1700;
+                    lift.setWristPosFixed(0.42);
                 }
 
                 //lift.interpolateToEncoder(lift.liftL, lift.liftL.getTargetPosition(), 500, 5);
@@ -139,8 +151,6 @@ public class Meet2TeleOp extends LinearOpMode {
                 lift.arm.moveTo(liftPos);
             }
 
-            if(gamepad2.share) requestOpModeStop();
-            //if(gamepad2.square) lift.setLauncher(1);
 
 
             telemetry.addData("Left Target", lift.liftL.getTargetPosition());
@@ -157,6 +167,9 @@ public class Meet2TeleOp extends LinearOpMode {
 
 
             if (bGamepad1.b()) autoClose = !autoClose;
+            if(bGamepad1.y()) lift.setWristPosFixed(lift.getWristPos() - 0.02);
+            if(bGamepad1.a()) lift.setWristPosFixed(lift.getWristPos() + 0.02);
+
 
             if(gamepad1.dpad_up) lift.setWristPos(drop3);
             if(gamepad1.dpad_right) lift.setWristPos(hover);
@@ -171,7 +184,7 @@ public class Meet2TeleOp extends LinearOpMode {
             lift.setLeftClaw(lClosed);
             drive.update();
 
-            lift.calWrist(bGamepad2.dpad_up(), bGamepad2.dpad_down());
+            //lift.calWrist(bGamepad2.dpad_up(), bGamepad2.dpad_down());
 
 
             Pose2d poseEstimate = drive.getPoseEstimate();

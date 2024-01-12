@@ -94,8 +94,11 @@ public class TrajectorySequenceRunner {
         lastSegmentIndex = -1;
     }
 
-    public void followTrajectorySequenceAsyncLift(TrajectorySequence trajectorySequence, Lift lift, int targetL, int targetR, int speed) {
-        lift.moveTo(targetL);
+    public void followTrajectorySequenceAsyncLift(TrajectorySequence trajectorySequence, Lift lift, int targetPos, boolean clawR, boolean clawL, double wristPos, int offset, double power) {
+        lift.moveToPower(targetPos, power);
+        lift.setLeftClaw(clawL);
+        lift.setRightClaw(clawR);
+        lift.setWristPosFixed(wristPos);
 
         currentTrajectorySequence = trajectorySequence;
         currentSegmentStartTime = clock.seconds();

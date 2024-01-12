@@ -44,12 +44,16 @@ public class Meet3Auto_RED_BACKBOARD extends LinearOpMode
 
     public double middlePos1 = 0.75;
     public int offset = 0;
+    public double xOffset = 0;
+    public double yOffset = 0;
 
-    public double yOffset = 3.5;
-    public double xOffset = -4.75;
+    public double rightOffset = -4.75;
+    public int sign = -1;
 
-    public double dropXPos = -24 + xOffset;
-    public int dropLiftPos = -2200;
+    public double dropXPos = -24  + xOffset;
+    public int dropLiftPos = -1900;
+
+    public boolean leftPark = true;
 
 
     @Override
@@ -59,50 +63,58 @@ public class Meet3Auto_RED_BACKBOARD extends LinearOpMode
         Lift lift = new Lift(telemetry, hardwareMap);
         String path = "middle";
 
+        initTfod();
+
         TrajectorySequence middle = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineTo(new Vector2d(-6 + xOffset, -44 + yOffset))
+                .lineTo(new Vector2d(-6 + xOffset + rightOffset, sign * 44 + yOffset))
                 .build();
 
         TrajectorySequence middle2 = drive.trajectorySequenceBuilder(middle.end())
-                .lineTo(new Vector2d(dropXPos, -37 + 2.25 + yOffset))
-                .build();
-
-        TrajectorySequence left = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineTo(new Vector2d(0 + xOffset, -35 + yOffset))
-                .lineTo(new Vector2d(6.5 + xOffset, -35 + yOffset))
-                .build();
-
-        TrajectorySequence left2 = drive.trajectorySequenceBuilder(left.end())
-                .lineTo(new Vector2d(0 + xOffset, -38 + yOffset))
-                .lineTo(new Vector2d(dropXPos + 2.65, -45 + 2  + 2.25 + yOffset))
+                .lineTo(new Vector2d(dropXPos - 2 + rightOffset, sign *35.75 + yOffset))
                 .build();
 
         TrajectorySequence right = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineTo(new Vector2d(-19.5 + xOffset, -31 + yOffset))
+                .lineTo(new Vector2d(0 + xOffset + rightOffset, sign *35 + yOffset))
+                .lineTo(new Vector2d(12 + xOffset + rightOffset, sign *35 + yOffset))
+                .lineTo(new Vector2d(4.1 + xOffset + rightOffset, sign *35 + yOffset))
                 .build();
 
-        TrajectorySequence right2 = drive.trajectorySequenceBuilder(left.end())
-                .lineTo(new Vector2d(dropXPos + 3, -29 + 2.25 + yOffset))
+        /*TrajectorySequence rightSwitch1 = drive.trajectorySequenceBuilder(right.end())
+                .lineTo(new Vector2d(-4 + xOffset + rightOffset, sign *35))
                 .build();
 
-        TrajectorySequence park = drive.trajectorySequenceBuilder(new Pose2d(-60.77, -36.39, Math.toRadians(180.00)))
-                .lineTo(new Vector2d(-47.28, -36.05))
-                .lineTo(new Vector2d(-58.99, -60.62))
+
+        TrajectorySequence rightSwitch2 = drive.trajectorySequenceBuilder(rightSwitch1.end())
+                .lineTo(new Vector2d(-4 + xOffset - 2 + rightOffset, sign *35))
+                .lineTo(new Vector2d(-4 + xOffset - 2 + rightOffset, sign *(35 - 7)))
+                .lineTo(new Vector2d(-4 + xOffset + rightOffset, sign *(35 - 7)))
+                .build();*/
+
+        TrajectorySequence right2 = drive.trajectorySequenceBuilder(right.end())
+                .lineTo(new Vector2d(0 + xOffset + rightOffset, sign *38 + yOffset))
+                .lineTo(new Vector2d(dropXPos - 1.75 + rightOffset, sign *(43.25 + 2 + 1.5)+ yOffset) )
                 .build();
-        initTfod();
+
+        TrajectorySequence left = drive.trajectorySequenceBuilder(new Pose2d())
+                .lineTo(new Vector2d(-19.5 - 2 + xOffset + rightOffset, sign *(31)+ yOffset) )
+                .build();
+
+        TrajectorySequence left2 = drive.trajectorySequenceBuilder(left.end())
+                .lineTo(new Vector2d(dropXPos - 5.5 + rightOffset, sign *(29)+ yOffset))
+                .build();
 
         while (!isStarted()) {
             telemetryTfod();
             telemetry.update();
             lift.setRightClaw(true);
             lift.setLeftClaw(true);
-            if(gamepad1.dpad_left) path = "left";
-            if(gamepad1.dpad_right) path = "right";
-            if(gamepad1.dpad_up) path = "middle";
+            path = getSide();
+
+            if(gamepad1.dpad_left) leftPark = true;
+            else if(gamepad1.dpad_right) leftPark = false;
 
             lift.arm.reset();
         }
-
 
         waitForStart();
 
@@ -116,52 +128,81 @@ public class Meet3Auto_RED_BACKBOARD extends LinearOpMode
                 drive.followTrajectorySequence(left);
                 lift.setWristPosFixed(0.900);
                 sleep(1000);
-                lift.setRightClaw(false);
+                lift.setLeftClaw(false);
                 sleep(1000);
                 lift.setWristPosFixed(0.42);
                 drive.followTrajectorySequence(left2);
                 //drive.followTrajectorySequence(middle3);
                 sleepLiftPower(1500, lift, dropLiftPos, true, true, 0.42, offset, 0.5);
                 sleep(1000);
-                sleepLiftPower(1000, lift, dropLiftPos, true, false, 0.42, offset, 0);
+                sleepLiftPower(1000, lift, dropLiftPos, false, true, 0.42, offset, 0);
                 //sleepLift(750, lift, dropLiftPos, false, false, 0.42, offset);
-                sleepLift(1000, lift, -900, true, false, 0.42, offset);
-                sleepLift(1000, lift, -100, true, false, 0.15, offset);
+                sleepLift(1000, lift, -900, false, true, 0.42, offset);
+                sleepLift(2000, lift, 0, true, true, 0.15, offset);
                 break;
             case "right":
                 drive.followTrajectorySequence(right);
                 lift.setWristPosFixed(0.900);
                 sleep(1000);
+                lift.setLeftClaw(false);
+                sleep(1000);
+
+               /* drive.followTrajectorySequence(rightSwitch1);
                 lift.setRightClaw(false);
                 sleep(1000);
+                lift.setWristPosFixed(0.15);
+                drive.followTrajectorySequence(rightSwitch2);
+                sleep(100);
+                lift.setWristPosFixed(0.900);
+                sleep(1000);
+                lift.setLeftClaw(true);
+                sleep(500);*/
+
                 lift.setWristPosFixed(0.42);
+
                 drive.followTrajectorySequence(right2);
                 //drive.followTrajectorySequence(middle3);
-                sleepLiftPower(1500, lift, dropLiftPos, false, true, 0.42, offset, 0.5);
+                sleepLiftPower(1500, lift, dropLiftPos, true, true, 0.42, offset, 0.5);
                 sleep(1000);
-                sleepLiftPower(1000, lift, dropLiftPos, false, false, 0.42, offset, 0);
+                sleepLiftPower(1000, lift, dropLiftPos, false, true, 0.42, offset, 0);
                 //sleepLift(750, lift, dropLiftPos, false, false, 0.42, offset);
-                sleepLift(1000, lift, -900, false, false, 0.42, offset);
-                sleepLift(1000, lift, -100, false, false, 0.15, offset);
+                sleepLift(1000, lift, -900, false, true, 0.42, offset);
+                sleepLift(2000, lift, 0, true, true, 0.15, offset);
                 break;
             case "middle":
                 drive.followTrajectorySequence(middle);
                 lift.setWristPosFixed(0.900);
                 sleep(1000);
-                lift.setRightClaw(false);
+                lift.setLeftClaw(false);
                 sleep(1000);
                 lift.setWristPosFixed(0.42);
                 drive.followTrajectorySequence(middle2);
                 //drive.followTrajectorySequence(middle3);
-                sleepLiftPower(1500, lift, dropLiftPos, false, true, 0.42, offset, 0.5);
+                sleepLiftPower(1500, lift, dropLiftPos, true, true, 0.42, offset, 0.5);
                 sleep(1000);
-                sleepLiftPower(1000, lift, dropLiftPos, false, false, 0.42, offset, 0);
+                sleepLiftPower(1000, lift, dropLiftPos, false, true, 0.42, offset, 0);
                 //sleepLift(750, lift, dropLiftPos, false, false, 0.42, offset);
-                sleepLift(1000, lift, -900, false, false, 0.42, offset);
-                sleepLift(1000, lift, -100, false, false, 0.15, offset);
+                sleepLift(1000, lift, -900, false, true, 0.42, offset);
+                sleepLift(2000, lift, 0, true, true, 0.15, offset);
                 break;
         }
 
+        Pose2d myPose = drive.getPoseEstimate();
+
+        TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(myPose)
+                .lineTo(new Vector2d(-24, sign*36))
+                .lineTo(new Vector2d(-24, sign*9))
+                .lineTo(new Vector2d(-36, sign*9))
+                .build();
+
+        TrajectorySequence parkRight = drive.trajectorySequenceBuilder(myPose)
+                .lineTo(new Vector2d(-24, sign*36))
+                .lineTo(new Vector2d(-24, sign*69))
+                .lineTo(new Vector2d(-36, sign*69))
+                .build();
+
+
+        drive.followTrajectorySequence(leftPark ? parkLeft : parkRight);
 
     }
     private void telemetryTfod() {
@@ -250,8 +291,8 @@ public class Meet3Auto_RED_BACKBOARD extends LinearOpMode
         if (recognition.isEmpty()) return "left";
         for (int i = 0; i<recognition.size(); i++) {
             if (recognition.get(i).getWidth()>250 || recognition.get(i).getHeight()>250) {}
-            else if (recognition.get(i).getLeft() > 300) return "right";
-            else if (recognition.get(i).getLeft() <= 300) return "middle";
+            else if (recognition.get(i).getLeft() > 275) return "middle";
+            else if (recognition.get(i).getLeft() <= 275) return "right";
         }
         return "left";
 

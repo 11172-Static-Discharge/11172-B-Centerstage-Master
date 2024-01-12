@@ -11,7 +11,6 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksTo
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kA;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
-import static org.openftc.apriltag.ApriltagDetectionJNI.getPoseEstimate;
 
 import androidx.annotation.NonNull;
 
@@ -193,18 +192,17 @@ public class SampleMecanumDrive extends MecanumDrive {
         trajectorySequenceRunner.followTrajectorySequenceAsync(trajectorySequence);
     }
 
-    public void followTrajectorySequenceAsyncLift(TrajectorySequence trajectorySequence, Lift lift, int targetL, int targetR, int speed) {
-        trajectorySequenceRunner.followTrajectorySequenceAsyncLift(trajectorySequence, lift, targetL, targetR, speed);
+    public void followTrajectorySequenceAsyncLift(TrajectorySequence trajectorySequence, Lift lift, int targetPos, boolean clawR, boolean clawL, double wristPos, int offset, double power) {
+        trajectorySequenceRunner.followTrajectorySequenceAsyncLift(trajectorySequence, lift, targetPos, clawR, clawL, wristPos, offset, power);
     }
-
 
     public void followTrajectorySequence(TrajectorySequence trajectorySequence) {
         followTrajectorySequenceAsync(trajectorySequence);
         waitForIdle();
     }
 
-    public void followTrajectorySequenceLift(TrajectorySequence trajectorySequence, Lift lift, int targetL, int targetR, int speed) {
-        followTrajectorySequenceAsyncLift(trajectorySequence, lift, targetL, targetR, speed);
+    public void followTrajectorySequenceLift(TrajectorySequence trajectorySequence, Lift lift, int targetPos, boolean clawR, boolean clawL, double wristPos, int offset, double power) {
+        followTrajectorySequenceAsyncLift(trajectorySequence, lift, targetPos, clawR, clawL, wristPos, offset, power);
         waitForIdle();
     }
 

@@ -29,4 +29,5 @@ public class BetterBoolGamepad {
     public boolean y() {return y.betterboolean(gamepad.y);}
     public boolean left_bumper(){return lb.betterboolean(gamepad.left_bumper);}
     public boolean right_bumper() {return rb.betterboolean(gamepad.right_bumper);}
+
 }

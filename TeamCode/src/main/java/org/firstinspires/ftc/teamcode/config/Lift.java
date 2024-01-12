@@ -53,7 +53,7 @@ public class Lift
 
         wrist = map.servo.get("wrist");
         this.tele = tele;
-        //launcher = map.servo.get("launcher");
+        launcher = map.servo.get("launcher");
 
         arm = new PIDFArm(liftL, liftR, tele, 10);
 
@@ -124,6 +124,7 @@ public class Lift
 
 
     public void setRightClaw(boolean closed) {clawR.setPosition(closed ? clawRClose : clawROpen);}
+
     public void setLeftClaw(boolean closed) {clawL.setPosition(closed ? clawLClose : clawLOpen);}
 
     public void setLauncher(double position){launcher.setPosition(position);}

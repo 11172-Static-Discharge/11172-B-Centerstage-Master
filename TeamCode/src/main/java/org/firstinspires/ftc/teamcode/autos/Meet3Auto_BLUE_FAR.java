@@ -10,7 +10,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDir
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.config.Lift;
-import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -46,7 +45,7 @@ public class Meet3Auto_BLUE_FAR extends LinearOpMode
     public double middlePos1 = 0.75;
     public int offset = 0;
 
-    public double dropXPos = -24;
+    public double dropXPos = -66.3;
     public int dropLiftPos = -2200;
 
 
@@ -57,40 +56,61 @@ public class Meet3Auto_BLUE_FAR extends LinearOpMode
         Lift lift = new Lift(telemetry, hardwareMap);
         String path = "middle";
 
-        TrajectorySequence middle = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineTo(new Vector2d(-6, 44))
-                .build();
 
-        TrajectorySequence middle2 = drive.trajectorySequenceBuilder(middle.end())
-                .lineTo(new Vector2d(dropXPos, 37))
-                .build();
 
         TrajectorySequence right = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineTo(new Vector2d(6, 2))
-                .lineTo(new Vector2d(6, 30))
+                .lineTo(new Vector2d(5, 2))
+                .lineTo(new Vector2d(5, 34))
                 .build();
+
+        /*TrajectorySequence rightCross = drive.trajectorySequenceBuilder(right.end())
+                .lineTo(new Vector2d(-16.5, 34),
+                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .lineTo(new Vector2d(-16.5, 34 + 30),
+                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .build();*/
 
         TrajectorySequence rightCross = drive.trajectorySequenceBuilder(right.end())
-                .lineTo(new Vector2d(-18.75, 30),
-                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineTo(new Vector2d(-18.75, 30 + 30),
-                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .build();
+                .lineTo(new Vector2d(5, 34 + 30))
+                .lineTo(new Vector2d(dropXPos, 34 + 30))
 
-        TrajectorySequence right2 = drive.trajectorySequenceBuilder(right.end())
-                .lineTo(new Vector2d(0, 38))
                 .lineTo(new Vector2d(dropXPos, 45))
                 .build();
 
+
+
         TrajectorySequence left = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineTo(new Vector2d(-19.5, 31))
+                .lineTo(new Vector2d(5, 2))
+                .lineTo(new Vector2d(5, 34))
+                .lineTo(new Vector2d(-13, 34))
                 .build();
 
-        TrajectorySequence left2 = drive.trajectorySequenceBuilder(left.end())
+        TrajectorySequence leftCross = drive.trajectorySequenceBuilder(left.end())
+                .lineTo(new Vector2d(-29, 34))
+                .lineTo(new Vector2d(-29, 34 + 30))
+                .lineTo(new Vector2d(dropXPos + 2, 34 + 30))
+
                 .lineTo(new Vector2d(dropXPos - 3, 29))
                 .build();
+
+        TrajectorySequence middle = drive.trajectorySequenceBuilder(new Pose2d())
+                .lineTo(new Vector2d(5, 2))
+                .lineTo(new Vector2d(5, 38))
+                .lineToLinearHeading(new Pose2d(5, 37, Math.toRadians(90)))
+                .build();
+
+        TrajectorySequence middleCross = drive.trajectorySequenceBuilder(middle.end())
+                .lineTo(new Vector2d(5, 25))
+                .lineToLinearHeading(new Pose2d(5, 26, Math.toRadians(0)))
+                .lineTo(new Vector2d(5, 34 + 30))
+                .lineTo(new Vector2d(dropXPos - 1, 34 + 30))
+
+                .lineTo(new Vector2d(dropXPos - 1, 37))
+                .build();
+
+
 
         TrajectorySequence park = drive.trajectorySequenceBuilder(new Pose2d(-60.77, -36.39, Math.toRadians(180.00)))
                 .lineTo(new Vector2d(-47.28, -36.05))
@@ -125,15 +145,16 @@ public class Meet3Auto_BLUE_FAR extends LinearOpMode
                 sleep(1000);
                 lift.setLeftClaw(false);
                 sleep(1000);
-                lift.setWristPosFixed(0.42);
-                drive.followTrajectorySequence(left2);
-                //drive.followTrajectorySequence(middle3);
-                sleepLiftPower(1500, lift, dropLiftPos, true, false, 0.42, offset, 0.5);
+                lift.setWristPosFixed(0.1);
+                sleep(500);
+                lift.setLeftClaw(true);
+                drive.followTrajectorySequence(leftCross);
+                sleepLiftPower(1500, lift, dropLiftPos, true, true, 0.42, offset, 0.5);
                 sleep(1000);
-                sleepLiftPower(1000, lift, dropLiftPos, false, false, 0.42, offset, 0);
+                sleepLiftPower(1000, lift, dropLiftPos, false, true, 0.42, offset, 0);
                 //sleepLift(750, lift, dropLiftPos, false, false, 0.42, offset);
-                sleepLift(1000, lift, -900, false, false, 0.42, offset);
-                sleepLift(1000, lift, -100, false, false, 0.15, offset);
+                sleepLift(1000, lift, -900, false, true, 0.42, offset);
+                sleepLift(1000, lift, 20, true, true, 0.15, offset);
                 break;
             case "right":
                 drive.followTrajectorySequence(right);
@@ -145,8 +166,12 @@ public class Meet3Auto_BLUE_FAR extends LinearOpMode
                 sleep(500);
                 lift.setLeftClaw(true);
                 drive.followTrajectorySequence(rightCross);
-                lift.setWristPosFixed(0.42);
-
+                sleepLiftPower(1500, lift, dropLiftPos, true, true, 0.42, offset, 0.5);
+                sleep(1000);
+                sleepLiftPower(1000, lift, dropLiftPos, false, true, 0.42, offset, 0);
+                //sleepLift(750, lift, dropLiftPos, false, false, 0.42, offset);
+                sleepLift(1000, lift, -900, false, true, 0.42, offset);
+                sleepLift(1000, lift, 20, true, true, 0.15, offset);
               /*  lift.setWristPosFixed(0.42);
                 drive.followTrajectorySequence(right2);
                 //drive.followTrajectorySequence(middle3);
@@ -158,7 +183,7 @@ public class Meet3Auto_BLUE_FAR extends LinearOpMode
                 sleepLift(1000, lift, -100, false, true, 0.15, offset);*/
                 break;
             case "middle":
-                drive.followTrajectorySequence(right);
+                drive.followTrajectorySequence(middle);
                 lift.setWristPosFixed(0.900);
                 sleep(1000);
                 lift.setLeftClaw(false);
@@ -166,23 +191,13 @@ public class Meet3Auto_BLUE_FAR extends LinearOpMode
                 lift.setWristPosFixed(0.1);
                 sleep(500);
                 lift.setLeftClaw(true);
-                drive.followTrajectorySequence(rightCross);
-                lift.setWristPosFixed(0.42);
-
-               /* drive.followTrajectorySequence(middle);
-                lift.setWristPosFixed(0.900);
+                drive.followTrajectorySequence(middleCross);
+                sleepLiftPower(1500, lift, dropLiftPos, true, true, 0.42, offset, 0.5);
                 sleep(1000);
-                lift.setLeftClaw(false);
-                sleep(1000);
-                lift.setWristPosFixed(0.42);
-                drive.followTrajectorySequence(middle2);
-                //drive.followTrajectorySequence(middle3);
-                sleepLiftPower(1500, lift, dropLiftPos, true, false, 0.42, offset, 0.5);
-                sleep(1000);
-                sleepLiftPower(1000, lift, dropLiftPos, false, false, 0.42, offset, 0);
+                sleepLiftPower(1000, lift, dropLiftPos, false, true, 0.42, offset, 0);
                 //sleepLift(750, lift, dropLiftPos, false, false, 0.42, offset);
-                sleepLift(1000, lift, -900, false, false, 0.42, offset);
-                sleepLift(1000, lift, -100, false, false, 0.15, offset);*/
+                sleepLift(1000, lift, -900, false, true, 0.42, offset);
+                sleepLift(1000, lift, 20, true, true, 0.15, offset);
                 break;
         }
 
@@ -234,7 +249,7 @@ public class Meet3Auto_BLUE_FAR extends LinearOpMode
 
         // Set the camera (webcam vs. built-in RC phone camera).
         if (USE_WEBCAM) {
-            builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
+            builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"));
         } else {
             builder.setCamera(BuiltinCameraDirection.BACK);
         }
