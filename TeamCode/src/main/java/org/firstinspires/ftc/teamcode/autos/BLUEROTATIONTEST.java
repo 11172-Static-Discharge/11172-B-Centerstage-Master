@@ -18,8 +18,8 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-@Autonomous (name = "Meet3Auto_BLUE_BACKBOARD", group = "autos")
-public class Meet3Auto_BLUE_BACKBOARD extends LinearOpMode
+@Autonomous (name = "BLUEROTATIONTEST", group = "autos")
+public class BLUEROTATIONTEST extends LinearOpMode
 {    private static final boolean USE_WEBCAM = true;  // true for webcam, false for phonhie camera
 
     /**
@@ -52,7 +52,7 @@ public class Meet3Auto_BLUE_BACKBOARD extends LinearOpMode
     public int sign = 1;
 
     public double dropXPos = -20  + xOffset;
-    public int dropLiftPos = -1900;
+    public int dropLiftPos = -200;
 
     public boolean leftPark = true;
     public double tapeOffset = 0;
@@ -68,12 +68,28 @@ public class Meet3Auto_BLUE_BACKBOARD extends LinearOpMode
         initTfod();
 
         TrajectorySequence middle = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineTo(new Vector2d(-6 + xOffset + rightOffset, sign * 44 + yOffset + tapeOffset))
+                .lineTo(new Vector2d(-8, sign * 44))
                 .build();
 
         TrajectorySequence middle2 = drive.trajectorySequenceBuilder(middle.end())
-                .lineTo(new Vector2d(dropXPos - 2 + rightOffset, sign *35.75 + yOffset))
+                .lineTo(new Vector2d(-16, sign * 44))
+                .splineTo(new Vector2d(-28, 37), Math.toRadians(-180))
                 .build();
+
+        TrajectorySequence middle3 = drive.trajectorySequenceBuilder(middle2.end())
+                .lineTo(new Vector2d(-30, 37))
+                .build();
+
+        TrajectorySequence middle4 = drive.trajectorySequenceBuilder(middle3.end())
+                .lineTo(new Vector2d(35, 37),
+                SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
+                SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .build();
+
+        TrajectorySequence middle5 = drive.trajectorySequenceBuilder(middle4.end())
+                .lineTo(new Vector2d(25, 25))
+                .build();
+
 
         TrajectorySequence right = drive.trajectorySequenceBuilder(new Pose2d())
                 .lineTo(new Vector2d(0 + xOffset + rightOffset, sign *35 + yOffset+ tapeOffset))
@@ -111,6 +127,8 @@ public class Meet3Auto_BLUE_BACKBOARD extends LinearOpMode
             lift.setRightClaw(true);
             lift.setLeftClaw(true);
             path = getSide();
+            telemetry.addData("side: ", path);
+            telemetry.update();
 
             if(gamepad1.dpad_left) leftPark = true;
             else if(gamepad1.dpad_right) leftPark = false;
@@ -192,22 +210,18 @@ public class Meet3Auto_BLUE_BACKBOARD extends LinearOpMode
                 sleep(1000);
                 lift.setLeftClaw(false);
                 sleep(1000);
-                lift.setWristPosFixed(0.42);
+                lift.setWristPosFixed(0.15);
                 drive.followTrajectorySequence(middle2);
-                //drive.followTrajectorySequence(middle3);
-                sleepLiftPower(1500, lift, dropLiftPos, true, true, 0.42, offset, 0.5);
-                sleep(1000);
+                drive.followTrajectorySequence(middle3);
+                drive.followTrajectorySequenceLift(middle4, lift, dropLiftPos, true, true, 0.15, offset, 4);
 
-                TrajectorySequence pushMid = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                        .lineTo(new Vector2d(drive.getPoseEstimate().getX()-5, drive.getPoseEstimate().getY()),
-                                SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
-                                SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                        .build();
-                drive.followTrajectorySequenceLift(pushMid,lift, dropLiftPos, true, true, 0.42, offset, 0.5);
-                sleepLiftPower(1000, lift, dropLiftPos, false, true, 0.42, offset, 0);
-                //sleepLift(750, lift, dropLiftPos, false, false, 0.42, offset);
-                sleepLift(1000, lift, -900, false, true, 0.42, offset);
-                sleepLift(2000, lift, 0, true, true, 0.15, offset);
+                //drive.followTrajectorySequence(middle3);
+                sleepLiftPower(2000, lift, 0, true, true, 0.76, offset, 0.5);
+                sleep(1000);
+                lift.setRightClaw(false);
+                sleep(1000);
+                drive.followTrajectorySequence(middle5);
+
                 break;
         }
 
@@ -226,7 +240,7 @@ public class Meet3Auto_BLUE_BACKBOARD extends LinearOpMode
                 .build();
 
 
-        drive.followTrajectorySequence(leftPark ? parkLeft : parkRight);
+        //drive.followTrajectorySequence(leftPark ? parkLeft : parkRight);
 
     }
     private void telemetryTfod() {

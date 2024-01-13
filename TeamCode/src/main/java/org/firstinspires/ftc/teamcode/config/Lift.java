@@ -23,7 +23,7 @@ public class Lift
     public PIDFArm arm;
 
     double clawLOpen = 0.48;
-    double clawLClose = 0.39;
+    double clawLClose = 0.38;
 
     double autoClawClose = 0;
 
@@ -33,7 +33,7 @@ public class Lift
     Telemetry tele;
 
     double clawROpen = 0.49;
-    double clawRClose = 0.58;
+    double clawRClose = 0.59;
     double wristPos, increment = 0.01, closeTol = 1;
     public Lift(Telemetry tele, HardwareMap map)
     {

@@ -32,6 +32,10 @@ public class Meet2TeleOp extends LinearOpMode {
     public double deadzone = 0.25;
 
 
+    public double offset;
+
+    public boolean linRegMode;
+
 
     public boolean rClosed, lClosed;
     public boolean positionSet, interpolate;
@@ -61,6 +65,9 @@ public class Meet2TeleOp extends LinearOpMode {
         rClosed = true;
         autoClose = false;
         lClosed = true;
+
+        linRegMode = false;
+        offset = 0;
 
         positionSet = false;
         interpolate = false;
@@ -125,31 +132,34 @@ public class Meet2TeleOp extends LinearOpMode {
 
                 lift.setLiftPower(gamepad1.left_stick_y * 0.5, -gamepad1.left_stick_y * 0.5);
 
+                liftPos = lift.liftL.getCurrentPosition();
+
             }
             else {
 
                 if(gamepad1.right_stick_button)
                 {
                     liftPos = -35;
-                    lift.setWristPosFixed(0.87);
+                    lift.setWristPosFixed(0.79);
                 }
 
                 if(gamepad1.left_stick_button)
                 {
-                    liftPos = -1300;
-                    lift.setWristPosFixed(0.3);
+                    liftPos = -1320;
+                    lift.setWristPosFixed(0.22);
                 }
 
                 if(gamepad1.dpad_left)
                 {
                     liftPos = -1700;
-                    lift.setWristPosFixed(0.42);
+                    lift.setWristPosFixed(0.37);
                 }
 
                 //lift.interpolateToEncoder(lift.liftL, lift.liftL.getTargetPosition(), 500, 5);
                 //lift.interpolateToEncoder(lift.liftR, lift.liftR.getTargetPosition(), 500, 5);
-                lift.arm.moveTo(liftPos);
             }
+            lift.arm.moveTo(liftPos);
+            if(gamepad1.square) linRegMode = !linRegMode;
 
 
 
@@ -167,11 +177,21 @@ public class Meet2TeleOp extends LinearOpMode {
 
 
             if (bGamepad1.b()) autoClose = !autoClose;
-            if(bGamepad1.y()) lift.setWristPosFixed(lift.getWristPos() - 0.02);
-            if(bGamepad1.a()) lift.setWristPosFixed(lift.getWristPos() + 0.02);
+            if(bGamepad1.y())
+            {
+                lift.setWristPosFixed(lift.getWristPos() - 0.02);
+                offset -= 0.02;
+            }
+            if(bGamepad1.a())
+            {
+                lift.setWristPosFixed(lift.getWristPos() + 0.02);
+                offset += 0.02;
+            }
+
+            if(linRegMode) lift.setWristPosFixed(WristReg(lift.liftL.getCurrentPosition(), offset));
 
 
-            if(gamepad1.dpad_up) lift.setWristPos(drop3);
+            if(gamepad1.dpad_up) lift.setWristPosFixed(0.25);
             if(gamepad1.dpad_right) lift.setWristPos(hover);
             if(gamepad1.dpad_down) lift.setWristPos(pickup);
 
@@ -193,5 +213,10 @@ public class Meet2TeleOp extends LinearOpMode {
             telemetry.addData("heading", poseEstimate.getHeading());
             telemetry.update();
         }
+    }
+
+    public double WristReg(int liftPos, double offset)
+    {
+        return (-3.947 * liftPos ) - 0.301 + offset;
     }
 }
