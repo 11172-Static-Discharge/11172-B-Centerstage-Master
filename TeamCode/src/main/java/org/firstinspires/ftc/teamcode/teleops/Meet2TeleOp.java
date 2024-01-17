@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.BetterBoolGamepad;
+import org.firstinspires.ftc.teamcode.ServoCalibrator;
 import org.firstinspires.ftc.teamcode.config.Lift;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
@@ -29,7 +30,7 @@ public class Meet2TeleOp extends LinearOpMode {
     public double[] drop3 = new double[]{0.6, 0.4, 0.38};
     public double speed = 0.5;
 
-    public double deadzone = 0.25;
+    public double deadzone = 0.5;
 
 
     public double offset;
@@ -43,6 +44,7 @@ public class Meet2TeleOp extends LinearOpMode {
     public int liftPos;
     public boolean autoClose;
     public double wristPos;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -99,7 +101,7 @@ public class Meet2TeleOp extends LinearOpMode {
 
 
             if(gamepad2.share) requestOpModeStop();
-            if(gamepad2.square) lift.setLauncher(1);
+            if(gamepad2.square) lift.setLauncher(0);
 
             //right trigger to speed up, left trigger to slow down
             if (gamepad1.right_trigger>0) speed = 0.5+gamepad1.right_trigger/2;
@@ -140,7 +142,7 @@ public class Meet2TeleOp extends LinearOpMode {
                 if(gamepad1.right_stick_button)
                 {
                     liftPos = -35;
-                    lift.setWristPosFixed(0.79);
+                    lift.setWristPosFixed(0.85);
                 }
 
                 if(gamepad1.left_stick_button)

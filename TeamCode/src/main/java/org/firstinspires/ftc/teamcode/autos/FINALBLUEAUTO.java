@@ -34,7 +34,7 @@ public class FINALBLUEAUTO extends LinearOpMode
     raise threshold for accuracy
     */
     private static final String[] labels = {"BlueElementv2", "RedElementv2"};
-    private static final String TFOD_MODEL_ASSET = "/sdcard/FIRST/tflitemodels/ModelMoreTraining.tflite";
+    private static final String TFOD_MODEL_ASSET = "/sdcard/FIRST/tflitemodels/RedBlueModel.tflite";
 
 
 
@@ -75,64 +75,72 @@ public class FINALBLUEAUTO extends LinearOpMode
 
         TrajectorySequence left2 = drive.trajectorySequenceBuilder(left.end())
                 .lineTo(new Vector2d(40, -31))
-                .lineTo(new Vector2d(48, -19))
+                .lineTo(new Vector2d(48, -17))
                 .build();
 
         TrajectorySequence left3 = drive.trajectorySequenceBuilder(left2.end())
-                .lineTo(new Vector2d(62, -19))
+                .lineTo(new Vector2d(57, -17),
+                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
         TrajectorySequence left4 = drive.trajectorySequenceBuilder(left3.end())
-                .lineTo(new Vector2d(40, -19))
+                .lineTo(new Vector2d(42, -17))
                 .build();
 
 
         TrajectorySequence middle = drive.trajectorySequenceBuilder(new Pose2d())
                 .lineTo(new Vector2d(16, -48.5))
-                .lineTo(new Vector2d(26, -45.5))
+                .lineTo(new Vector2d(26, -40.5))
                 .build();
 
 
         TrajectorySequence middle2 = drive.trajectorySequenceBuilder(middle.end())
                 .lineTo(new Vector2d(40, -31))
-                .lineTo(new Vector2d(54, -28.5))
+                .lineTo(new Vector2d(50, -28.5))
                 .build();
 
         TrajectorySequence middle3 = drive.trajectorySequenceBuilder(middle2.end())
-                .lineTo(new Vector2d(68, -28.5))
+                .lineTo(new Vector2d(60, -28.5),
+                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
         TrajectorySequence middle4 = drive.trajectorySequenceBuilder(middle3.end())
-                .lineTo(new Vector2d(40, -28.5))
+                .lineTo(new Vector2d(52, -28.5))
                 .build();
 
 
 
         TrajectorySequence right = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineTo(new Vector2d(10, -39))
-                .lineTo(new Vector2d(-6, -39))
-                .lineTo(new Vector2d(14, -39))
+                .lineTo(new Vector2d(5, -2))
+                .lineTo(new Vector2d(10, -36))
+                .lineTo(new Vector2d(-6, -36))
+                .lineTo(new Vector2d(17, -36))
                 .build();
 
         TrajectorySequence right2 = drive.trajectorySequenceBuilder(right.end())
-                .lineTo(new Vector2d(40, -31))
-                .lineTo(new Vector2d(48, -37.5))
+                .lineTo(new Vector2d(40, -40))
+                .lineTo(new Vector2d(45, -40))
                 .build();
 
         TrajectorySequence right3 = drive.trajectorySequenceBuilder(right2.end())
-                .lineTo(new Vector2d(62, -37.5))
+                .lineTo(new Vector2d(54, -40),
+                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
         TrajectorySequence right4 = drive.trajectorySequenceBuilder(right3.end())
-                .lineTo(new Vector2d(40, -37.5))
+                .lineTo(new Vector2d(47, -40))
                 .build();
 
         while (!isStarted()) {
             telemetryTfod();
+            path = getSide();
+            telemetry.addData("path: ", path);
             telemetry.update();
             lift.setRightClaw(true);
             lift.setLeftClaw(true);
-            path = getSide();
 
             if(gamepad1.dpad_left) leftPark = true;
             else if(gamepad1.dpad_right) leftPark = false;
@@ -313,7 +321,7 @@ public class FINALBLUEAUTO extends LinearOpMode
         List<Recognition> recognition = tfod.getRecognitions();
         if (recognition.isEmpty()) return "left";
         for (int i = 0; i<recognition.size(); i++) {
-            if (recognition.get(i).getWidth()>250 || recognition.get(i).getHeight()>250) {}
+            if (recognition.get(i).getWidth()>250 || recognition.get(i).getHeight()>350) {}
             else if (recognition.get(i).getLeft() > 275) return "middle";
             else if (recognition.get(i).getLeft() <= 275) return "right";
         }

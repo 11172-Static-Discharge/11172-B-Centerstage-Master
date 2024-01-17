@@ -14,7 +14,7 @@ public class Lift
     private static int ERROR_MARGIN = 20;
     private DcMotor intake;
     private DcMotor rightArm, leftArm;
-    private Servo clawR, clawL, wrist, launcher, autoClaw; //leftWrist;
+    private Servo clawR, clawL, wrist, launcher, autoClaw, dispenser; //leftWrist;
 
     public DcMotorEx liftR, liftL;
 
@@ -29,12 +29,14 @@ public class Lift
 
     double autoClawOpen = 1;
 
+    double clawLPos = 0, clawRPos = 0;
+
     public boolean autoClosedL = false, autoClosedR = false;
     Telemetry tele;
 
     double clawROpen = 0.49;
-    double clawRClose = 0.59;
-    double wristPos, increment = 0.01, closeTol = 1;
+    double clawRClose = 0.607;
+    double wristPos, increment = 0.01, closeTol = 1, dispenserPos = 0;
     public Lift(Telemetry tele, HardwareMap map)
     {
         clawR = map.servo.get("clawR");
@@ -42,6 +44,8 @@ public class Lift
        // autoClaw = map.servo.get("autoClaw");
         liftR = map.get(DcMotorEx.class, "liftR");
         liftL = map.get(DcMotorEx.class, "liftL");
+        dispenser = map.servo.get("dispenser");
+
 
 
         liftL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -89,10 +93,33 @@ public class Lift
             }
         }
     }
+    public void calClaw(boolean lClawL, boolean lClawR, boolean rClawL, boolean rClawR) {
+        if (lClawL) clawL.setPosition(clawLPos - increment/2);
+        if (lClawR) clawL.setPosition(clawLPos + increment/2);
+        if (rClawL) clawR.setPosition(clawRPos + increment/2);
+        if (rClawR) clawR.setPosition(clawRPos - increment/2);
+
+        clawLPos = clawL.getPosition();
+        clawRPos = clawR.getPosition();
+
+        tele.addData("clawLPos", clawLPos);
+        tele.addData("clawRPos", clawRPos);
+        tele.update();
+    }
 
     public void setLiftPowerBetter(double power) {
         liftR.setPower(power);
         liftL.setPower(-power);
+    }
+
+    public void setDispenser(double pos) {
+        dispenser.setPosition(pos);
+    }
+
+    public void calDispenser(boolean up, boolean down) {
+        if(up) dispenser.setPosition(dispenserPos + increment);
+        if(down) dispenser.setPosition(dispenserPos + increment);
+        dispenserPos = dispenser.getPosition();
     }
 
     public void calibrateLift(boolean up, boolean down) {
@@ -118,6 +145,9 @@ public class Lift
             wrist.setPosition(wristPos - increment);
         }
         wristPos = wrist.getPosition();
+
+        tele.addData("wristPos", wristPos);
+        tele.update();
 
     }
 

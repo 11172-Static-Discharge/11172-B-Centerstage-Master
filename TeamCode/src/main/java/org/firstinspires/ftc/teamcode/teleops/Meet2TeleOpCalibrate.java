@@ -6,9 +6,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.BetterBoolGamepad;
+import org.firstinspires.ftc.teamcode.ServoCalibrator;
 import org.firstinspires.ftc.teamcode.config.Lift;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
@@ -29,8 +31,12 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
     public double[] drop3 = new double[]{0.6, 0.4, 0.38};
     public double speed = 0.5;
 
-    public double deadzone = 0.25;
+    public double deadzone = 0.5;
 
+
+    public double offset;
+
+    public boolean linRegMode;
 
 
     public boolean rClosed, lClosed;
@@ -39,6 +45,7 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
     public int liftPos;
     public boolean autoClose;
     public double wristPos;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -58,9 +65,12 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
         lift.liftL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         lift.liftR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        rClosed = false;
+        rClosed = true;
         autoClose = false;
-        lClosed = false;
+        lClosed = true;
+
+        linRegMode = false;
+        offset = 0;
 
         positionSet = false;
         interpolate = false;
@@ -92,7 +102,7 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
 
 
             if(gamepad2.share) requestOpModeStop();
-            if(gamepad2.square) lift.setLauncher(1);
+            if(gamepad2.square) lift.setLauncher(0);
 
             //right trigger to speed up, left trigger to slow down
             if (gamepad1.right_trigger>0) speed = 0.5+gamepad1.right_trigger/2;
@@ -125,25 +135,34 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
 
                 lift.setLiftPower(gamepad1.left_stick_y * 0.5, -gamepad1.left_stick_y * 0.5);
 
+                liftPos = lift.liftL.getCurrentPosition();
+
             }
             else {
 
                 if(gamepad1.right_stick_button)
                 {
                     liftPos = -35;
-                    lift.setWristPosFixed(0.87);
+                    lift.setWristPosFixed(0.85);
                 }
 
                 if(gamepad1.left_stick_button)
                 {
-                    liftPos = -1300;
-                    lift.setWristPosFixed(0.26);
+                    liftPos = -1320;
+                    lift.setWristPosFixed(0.22);
+                }
+
+                if(gamepad1.dpad_left)
+                {
+                    liftPos = -1700;
+                    lift.setWristPosFixed(0.37);
                 }
 
                 //lift.interpolateToEncoder(lift.liftL, lift.liftL.getTargetPosition(), 500, 5);
                 //lift.interpolateToEncoder(lift.liftR, lift.liftR.getTargetPosition(), 500, 5);
-                lift.arm.moveTo(liftPos);
             }
+            lift.arm.moveTo(liftPos);
+            if(gamepad1.square) linRegMode = !linRegMode;
 
 
 
@@ -161,10 +180,23 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
 
 
             if (bGamepad1.b()) autoClose = !autoClose;
-            if(bGamepad1.y()) lift.setWristPosFixed(lift.getWristPos() - 0.02);
-            if(bGamepad1.a()) lift.setWristPosFixed(lift.getWristPos() + 0.02);
+            if(bGamepad1.y())
+            {
+                lift.setWristPosFixed(lift.getWristPos() - 0.02);
+                offset -= 0.02;
+            }
+            if(bGamepad1.a())
+            {
+                lift.setWristPosFixed(lift.getWristPos() + 0.02);
+                offset += 0.02;
+            }
+
+            if(linRegMode) lift.setWristPosFixed(WristReg(lift.liftL.getCurrentPosition(), offset));
 
 
+            if(gamepad1.dpad_up) lift.setWristPosFixed(0.25);
+            if(gamepad1.dpad_right) lift.setWristPos(hover);
+            if(gamepad1.dpad_down) lift.setWristPos(pickup);
 
 
 
@@ -176,7 +208,8 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
             drive.update();
 
             lift.calWrist(bGamepad2.dpad_up(), bGamepad2.dpad_down());
-            lift.calibrateLift(bGamepad1.dpad_up(), bGamepad1.dpad_down());
+            lift.calDispenser(bGamepad2.y(), bGamepad2.a());
+            //lift.calClaw(bGamepad2.b(), bGamepad2.a(), bGamepad2.x(), bGamepad2.y());
 
 
 
@@ -186,5 +219,10 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
             telemetry.addData("heading", poseEstimate.getHeading());
             telemetry.update();
         }
+    }
+
+    public double WristReg(int liftPos, double offset)
+    {
+        return (-3.947 * liftPos ) - 0.301 + offset;
     }
 }
