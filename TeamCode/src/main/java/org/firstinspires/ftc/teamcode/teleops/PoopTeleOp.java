@@ -9,17 +9,20 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
+import org.firstinspires.ftc.teamcode.config.Lift;
+
 @Config
-@TeleOp(name = "PIDF_ARM_LOOP", group = "drive")
-public class PIDF_ARM_loop extends OpMode {
+@TeleOp(name = "PoopTeleOp", group = "drive")
+public class PoopTeleOp extends OpMode {
 
     public PIDController lcontroller, rcontroller;
-    public static double p=0,i=0,d=0,f=0.22;
+    public static double p=0.1,i=0,d=0.0001,f=0.22;
     public DcMotorEx l,r;
 
     public final double ticksInDegree = 288 / 360.0;
 
     public static int targetL = 0;
+    Lift lift;
 
     public void init() {
         lcontroller = new PIDController(p, i, d);
@@ -28,6 +31,8 @@ public class PIDF_ARM_loop extends OpMode {
         l = hardwareMap.get(DcMotorEx.class, "liftL");
         r = hardwareMap.get(DcMotorEx.class, "liftR");
 
+        lift = new Lift(telemetry, hardwareMap);
+
         /*l.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         r.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -35,6 +40,40 @@ public class PIDF_ARM_loop extends OpMode {
         r.setMode(DcMotor.RunMode.RUN_USING_ENCODER);*/
     }
     public void loop() {
+
+
+
+
+
+
+
+        //LIFT STUFF HERE
+        if(Math.abs(gamepad1.left_stick_y) >= 0.2)
+        {
+            l.setPower(gamepad1.left_stick_y);
+            r.setPower(gamepad1.left_stick_y);
+            targetL = l.getCurrentPosition();
+            return;
+        }
+
+
+        if(gamepad1.dpad_up)
+        {
+            targetL = -120;
+            lift.setWristPosFixed(0.22);
+        }
+
+        if(gamepad1.dpad_right)
+        {
+            targetL = -20;
+            lift.setWristPosFixed(0.25);
+        }
+
+        if(gamepad1.dpad_down)
+        {
+            targetL = -13;
+            lift.setWristPosFixed(0.85);
+        }
 
         lcontroller.setPID(p,i,d);
         int lPos = l.getCurrentPosition();

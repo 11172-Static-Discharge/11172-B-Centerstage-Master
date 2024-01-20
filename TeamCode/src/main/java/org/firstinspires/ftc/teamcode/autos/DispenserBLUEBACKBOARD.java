@@ -136,8 +136,6 @@ public class DispenserBLUEBACKBOARD extends LinearOpMode
 
             if(gamepad1.dpad_left) leftPark = true;
             else if(gamepad1.dpad_right) leftPark = false;
-
-            lift.arm.reset();
         }
 
         waitForStart();

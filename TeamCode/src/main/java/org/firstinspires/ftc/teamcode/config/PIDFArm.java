@@ -21,10 +21,10 @@ public class PIDFArm {
     public PIDFArm(DcMotorEx l, DcMotorEx r, Telemetry tele, int increment) {
         this.l=l;
         this.r=r;
-        this.p=0.005;
+        this.p=0.1;
         this.i=0;
-        this.d=0.001;
-        this.f=-0.06;
+        this.d=0.0001;
+        this.f=0.22;
         this.increment = increment;
         this.tele = tele;
         targetL=0;
@@ -41,6 +41,11 @@ public class PIDFArm {
         r.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    public int getCurLPos()
+    {
+        return l.getCurrentPosition();
+    }
+
     public void moveTo(int targetPos) {
         controller.setPID(p, i, d);
         int lPos = l.getCurrentPosition();
@@ -52,8 +57,6 @@ public class PIDFArm {
             // Within tolerance, stop the motors and exit the method
             l.setPower(0);
             r.setPower(0);
-            tele.addData("Reached target position", lPos);
-            tele.update();
             return;
         }
 
@@ -62,39 +65,36 @@ public class PIDFArm {
 
         double power = lpid + lff;
 
-        l.setPower(power * 0.25);
-        r.setPower(-power * 0.25);
+        l.setPower(power);
+        r.setPower(power);
         tele.addData("lPos: ", lPos);
         tele.addData("lTarget: ", targetPos);
         tele.update();
     }
 
     public void moveToPower(int targetPos, double pow) {
-        controller.setPID(p, i, d);
+        controller.setPID(p,i,d);
         int lPos = l.getCurrentPosition();
+        if(lPos > 0) return;
 
-        int tolerance = 10;
+        double pid = controller.calculate(lPos, targetPos);
 
-        // Check if the current position is within the tolerance of the target position
-        if (Math.abs(lPos - targetPos) <= tolerance) {
-            // Within tolerance, stop the motors and exit the method
-            l.setPower(0);
-            r.setPower(0);
-            tele.addData("Reached target position", lPos);
-            tele.update();
-            return;
-        }
+        double ff = Math.cos(Math.toRadians(targetPos / ticksInDegree)) * f;
 
-        double lpid = controller.calculate(lPos, targetPos);
-        double lff = Math.cos(Math.toRadians(targetPos / ticksInDegree)) * f;
 
-        double power = lpid + lff;
+        double power = pid + ff;
 
-        l.setPower(power * 0.25 * pow);
-        r.setPower(-power * 0.25 * pow);
+        l.setPower(power);
+        r.setPower(power);
         tele.addData("lPos: ", lPos);
         tele.addData("lTarget: ", targetPos);
         tele.update();
+    }
+
+    public void setPower(double power)
+    {
+        l.setPower(power);
+        r.setPower(power);
     }
 
     public void calibratePos(boolean up, boolean down) {

@@ -14,7 +14,7 @@ public class Lift
     private static int ERROR_MARGIN = 20;
     private DcMotor intake;
     private DcMotor rightArm, leftArm;
-    private Servo clawR, clawL, wrist, launcher, autoClaw, dispenser; //leftWrist;
+    public Servo clawR, clawL, wrist, launcher, autoClaw, dispenser; //leftWrist;
 
     public DcMotorEx liftR, liftL;
 
@@ -37,6 +37,10 @@ public class Lift
     double clawROpen = 0.49;
     double clawRClose = 0.607;
     double wristPos, increment = 0.01, closeTol = 1, dispenserPos = 0;
+
+    int sequenceCounter = 0;
+
+    public int dropPos = 0;
     public Lift(Telemetry tele, HardwareMap map)
     {
         clawR = map.servo.get("clawR");
@@ -102,9 +106,9 @@ public class Lift
         clawLPos = clawL.getPosition();
         clawRPos = clawR.getPosition();
 
-        tele.addData("clawLPos", clawLPos);
-        tele.addData("clawRPos", clawRPos);
-        tele.update();
+        //tele.addData("clawLPos", clawLPos);
+        //tele.addData("clawRPos", clawRPos);
+        //tele.update();
     }
 
     public void setLiftPowerBetter(double power) {
@@ -146,8 +150,8 @@ public class Lift
         }
         wristPos = wrist.getPosition();
 
-        tele.addData("wristPos", wristPos);
-        tele.update();
+        //tele.addData("wristPos", wristPos);
+        //tele.update();
 
     }
 
@@ -178,6 +182,35 @@ public class Lift
     public void setAutoClaw(boolean closed)
     {
         autoClaw.setPosition(closed ? autoClawClose : autoClawOpen);
+    }
+
+
+
+    public void doSequence(boolean input) {
+        if(input) {
+            switch (sequenceCounter % 6) {
+                case 0:
+                    setRightClaw(true);
+                    setLeftClaw(true);
+                    break;
+                case 1:
+                    setWristPosFixed(0.25);
+                    break;
+                case 2:
+                    switch(dropPos) {
+                        case 0:
+
+                    }
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    break;
+                case 5:
+                    break;
+            }
+            sequenceCounter++;
+        }
     }
 
 

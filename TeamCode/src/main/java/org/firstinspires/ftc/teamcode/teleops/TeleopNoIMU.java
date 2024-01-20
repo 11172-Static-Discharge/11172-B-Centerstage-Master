@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.BetterBoolGamepad;
@@ -21,8 +20,8 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
  * exercise is to ascertain whether the localizer has been configured properly (note: the pure
  * encoder localizer heading may be significantly off if the track width has not been tuned).
  */
-@TeleOp(name = "Meet2TeleOpCalibrate", group = "drive")
-public class Meet2TeleOpCalibrate extends LinearOpMode {
+@TeleOp(name = "TeleOpNoIMU", group = "drive")
+public class TeleopNoIMU extends LinearOpMode {
 
     public double[] hover = new double[]{0.1, 0.9, 0.9};
     public double[] pickup = new double[]{0.12, 0.88, 0.93};
@@ -59,9 +58,6 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
         Lift lift = new Lift(telemetry, hardwareMap);
         BetterBoolGamepad bGamepad1 = new BetterBoolGamepad(gamepad1);
         BetterBoolGamepad bGamepad2 = new BetterBoolGamepad(gamepad2);
-
-        lift.clawR.setPosition(0.5);
-        lift.clawL.setPosition(0.5);
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -105,7 +101,7 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
 
 
             if(gamepad2.share) requestOpModeStop();
-            //if(gamepad2.square) lift.setLauncher(0);
+            if(gamepad2.square) lift.setLauncher(0);
 
             //right trigger to speed up, left trigger to slow down
             if (gamepad1.right_trigger>0) speed = 0.5+gamepad1.right_trigger/2;
@@ -173,11 +169,11 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
             telemetry.addData("Left", lift.liftL.getCurrentPosition());
             telemetry.addData("Right Target", lift.liftR.getTargetPosition());
             telemetry.addData("Right", lift.liftR.getCurrentPosition());
-            //telemetry.addData("Distance sensor L: ", sensorL.getDistance(DistanceUnit.INCH));
-            //telemetry.addData("Distance sesnor R: ", sensorR.getDistance(DistanceUnit.INCH));
-            //telemetry.addData("Close mode auto:", autoClose);
-            //telemetry.addData("Auto closed L", lift.autoClosedL);
-            //telemetry.addData("autoclosed r: ", lift.autoClosedR);
+            telemetry.addData("Distance sensor L: ", sensorL.getDistance(DistanceUnit.INCH));
+            telemetry.addData("Distance sesnor R: ", sensorR.getDistance(DistanceUnit.INCH));
+            telemetry.addData("Close mode auto:", autoClose);
+            telemetry.addData("Auto closed L", lift.autoClosedL);
+            telemetry.addData("autoclosed r: ", lift.autoClosedR);
             telemetry.addData("Wrist Pos", lift.getWristPos());
 
 
@@ -210,18 +206,14 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
             lift.setLeftClaw(lClosed);
             drive.update();
 
-            lift.calWrist(bGamepad2.dpad_up(), bGamepad2.dpad_down());
-            //lift.calDispenser(bGamepad2.y(), bGamepad2.a());
-            lift.calClaw(bGamepad2.b(), bGamepad2.a(), bGamepad2.x(), bGamepad2.y());
+            //lift.calWrist(bGamepad2.dpad_up(), bGamepad2.dpad_down());
 
-            telemetry.addData("clawRPosMain: ", lift.clawR.getPosition());
-            telemetry.addData("clawLPosMain: ", lift.clawL.getPosition());
 
-            Pose2d poseEstimate = drive.getPoseEstimate();
-            //telemetry.addData("x", poseEstimate.getX());
-            //telemetry.addData("y", poseEstimate.getY());
-            //telemetry.addData("heading", poseEstimate.getHeading());
-            telemetry.update();
+            /*Pose2d poseEstimate = drive.getPoseEstimate();
+            telemetry.addData("x", poseEstimate.getX());
+            telemetry.addData("y", poseEstimate.getY());
+            telemetry.addData("heading", poseEstimate.getHeading());
+            telemetry.update();*/
         }
     }
 

@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.BetterBoolGamepad;
@@ -21,8 +20,8 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
  * exercise is to ascertain whether the localizer has been configured properly (note: the pure
  * encoder localizer heading may be significantly off if the track width has not been tuned).
  */
-@TeleOp(name = "Meet2TeleOpCalibrate", group = "drive")
-public class Meet2TeleOpCalibrate extends LinearOpMode {
+@TeleOp(name = "LiftTele", group = "drive")
+public class LiftTele extends LinearOpMode {
 
     public double[] hover = new double[]{0.1, 0.9, 0.9};
     public double[] pickup = new double[]{0.12, 0.88, 0.93};
@@ -32,6 +31,7 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
     public double speed = 0.5;
 
     public double deadzone = 0.5;
+    public double powMultiplier = 1;
 
 
     public double offset;
@@ -60,9 +60,6 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
         BetterBoolGamepad bGamepad1 = new BetterBoolGamepad(gamepad1);
         BetterBoolGamepad bGamepad2 = new BetterBoolGamepad(gamepad2);
 
-        lift.clawR.setPosition(0.5);
-        lift.clawL.setPosition(0.5);
-
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         lift.liftL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -78,38 +75,25 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
         positionSet = false;
         interpolate = false;
 
+        liftPos = -15;
 
 
 
         waitForStart();
 
         while (!isStopRequested()) {
-            if(gamepad2.right_bumper)
-            {
-                double speed = 0.35;
-                drive.setMotorPowers(speed, -speed, speed, -speed);
-            }
-            else if(gamepad2.left_bumper)
-            {
-                double speed = 0.35;
-                drive.setMotorPowers(-speed, speed, -speed, speed);
-            }
-            else
-                drive.setWeightedDrivePower(
-                        new Pose2d(
-                                Math.abs(gamepad2.left_stick_y) > deadzone ? -gamepad2.left_stick_y * speed : 0,
-                                Math.abs(gamepad2.left_stick_x) > deadzone ?-gamepad2.left_stick_x * speed : 0,
-                                Math.abs(gamepad2.right_stick_x) > deadzone ?-gamepad2.right_stick_x * speed : 0
-                        )
-                );
+
+            drive.setWeightedDrivePower(
+                    new Pose2d(
+                            Math.abs(gamepad2.left_stick_y) > deadzone ? -gamepad2.left_stick_y * speed : 0,
+                            Math.abs(gamepad2.left_stick_x) > deadzone ?-gamepad2.left_stick_x * speed : 0,
+                            Math.abs(gamepad2.right_stick_x) > deadzone ?-gamepad2.right_stick_x * speed : 0
+                    )
+            );
 
 
             if(gamepad2.share) requestOpModeStop();
-            //if(gamepad2.square) lift.setLauncher(0);
-
-            //right trigger to speed up, left trigger to slow down
-            if (gamepad1.right_trigger>0) speed = 0.5+gamepad1.right_trigger/2;
-            if (gamepad1.left_trigger>0) speed = gamepad1.right_trigger/2;
+            if(gamepad2.square) lift.setLauncher(0);
 
             if(autoClose)
             {
@@ -128,61 +112,35 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
 
             if(Math.abs(gamepad1.left_stick_y) >= 0.2)
             {
-                telemetry.addData(" I", false);
-
-                positionSet = false;
-                interpolate = false;
-
-                lift.liftL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                lift.liftR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-                lift.setLiftPower(gamepad1.left_stick_y * 0.5, -gamepad1.left_stick_y * 0.5);
-
-                liftPos = lift.liftL.getCurrentPosition();
-
+                lift.arm.setPower(gamepad1.left_stick_y);
             }
             else {
-
-                if(gamepad1.right_stick_button)
+                if(gamepad1.dpad_up)
                 {
-                    liftPos = -35;
-                    lift.setWristPosFixed(0.85);
-                }
-
-                if(gamepad1.left_stick_button)
-                {
-                    liftPos = -1320;
+                    liftPos = -120;
                     lift.setWristPosFixed(0.22);
                 }
 
-                if(gamepad1.dpad_left)
+                if(gamepad1.dpad_right)
                 {
-                    liftPos = -1700;
-                    lift.setWristPosFixed(0.37);
+                    liftPos = -20;
+                    lift.setWristPosFixed(0.25);
                 }
 
-                //lift.interpolateToEncoder(lift.liftL, lift.liftL.getTargetPosition(), 500, 5);
-                //lift.interpolateToEncoder(lift.liftR, lift.liftR.getTargetPosition(), 500, 5);
+                if(gamepad1.dpad_down)
+                {
+                    liftPos = -13;
+                    lift.setWristPosFixed(0.85);
+                }
+                lift.moveToPower(liftPos, powMultiplier);
             }
-            lift.arm.moveTo(liftPos);
-            if(gamepad1.square) linRegMode = !linRegMode;
 
 
-
-            telemetry.addData("Left Target", lift.liftL.getTargetPosition());
-            telemetry.addData("Left", lift.liftL.getCurrentPosition());
-            telemetry.addData("Right Target", lift.liftR.getTargetPosition());
-            telemetry.addData("Right", lift.liftR.getCurrentPosition());
-            //telemetry.addData("Distance sensor L: ", sensorL.getDistance(DistanceUnit.INCH));
-            //telemetry.addData("Distance sesnor R: ", sensorR.getDistance(DistanceUnit.INCH));
-            //telemetry.addData("Close mode auto:", autoClose);
-            //telemetry.addData("Auto closed L", lift.autoClosedL);
-            //telemetry.addData("autoclosed r: ", lift.autoClosedR);
+            telemetry.addData("Left Target", liftPos);
             telemetry.addData("Wrist Pos", lift.getWristPos());
 
 
 
-            if (bGamepad1.b()) autoClose = !autoClose;
             if(bGamepad1.y())
             {
                 lift.setWristPosFixed(lift.getWristPos() - 0.02);
@@ -194,39 +152,22 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
                 offset += 0.02;
             }
 
-            if(linRegMode) lift.setWristPosFixed(WristReg(lift.liftL.getCurrentPosition(), offset));
-
-
-            if(gamepad1.dpad_up) lift.setWristPosFixed(0.25);
-            if(gamepad1.dpad_right) lift.setWristPos(hover);
-            if(gamepad1.dpad_down) lift.setWristPos(pickup);
-
-
-
-            //if(gamepad1.y) lift.setLauncher(1);
+            if(gamepad1.circle) autoClose = !autoClose;
+            if(gamepad1.dpad_left) lift.setWristPosFixed(0.25);
 
 
             lift.setRightClaw(rClosed);
             lift.setLeftClaw(lClosed);
             drive.update();
 
-            lift.calWrist(bGamepad2.dpad_up(), bGamepad2.dpad_down());
-            //lift.calDispenser(bGamepad2.y(), bGamepad2.a());
-            lift.calClaw(bGamepad2.b(), bGamepad2.a(), bGamepad2.x(), bGamepad2.y());
+            //lift.calWrist(bGamepad2.dpad_up(), bGamepad2.dpad_down());
 
-            telemetry.addData("clawRPosMain: ", lift.clawR.getPosition());
-            telemetry.addData("clawLPosMain: ", lift.clawL.getPosition());
 
             Pose2d poseEstimate = drive.getPoseEstimate();
-            //telemetry.addData("x", poseEstimate.getX());
-            //telemetry.addData("y", poseEstimate.getY());
-            //telemetry.addData("heading", poseEstimate.getHeading());
+            telemetry.addData("x", poseEstimate.getX());
+            telemetry.addData("y", poseEstimate.getY());
+            telemetry.addData("heading", poseEstimate.getHeading());
             telemetry.update();
         }
-    }
-
-    public double WristReg(int liftPos, double offset)
-    {
-        return (-3.947 * liftPos ) - 0.301 + offset;
     }
 }
