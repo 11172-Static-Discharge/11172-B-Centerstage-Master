@@ -16,14 +16,16 @@ public class Lift
     private DcMotor rightArm, leftArm;
     public Servo clawR, clawL, wrist, launcher, autoClaw, dispenser; //leftWrist;
 
-    public DcMotorEx liftR, liftL;
+    public DcMotorEx liftR, liftL, slide;
+
+    public double slideEncoderLimit = 100;
 
     public ColorRangeSensor sensorL, sensorR;
 
     public PIDFArm arm;
 
-    double clawLOpen = 0.48;
-    double clawLClose = 0.38;
+    double clawLOpen = 0.435;
+    double clawLClose = 0.365;
 
     double autoClawClose = 0;
 
@@ -34,8 +36,8 @@ public class Lift
     public boolean autoClosedL = false, autoClosedR = false;
     Telemetry tele;
 
-    double clawROpen = 0.49;
-    double clawRClose = 0.607;
+    double clawROpen = 0.55;
+    double clawRClose = 0.615;
     double wristPos, increment = 0.01, closeTol = 1, dispenserPos = 0;
 
     int sequenceCounter = 0;
@@ -48,12 +50,15 @@ public class Lift
        // autoClaw = map.servo.get("autoClaw");
         liftR = map.get(DcMotorEx.class, "liftR");
         liftL = map.get(DcMotorEx.class, "liftL");
+        slide = map.get(DcMotorEx.class, "slide");
         dispenser = map.servo.get("dispenser");
 
 
 
         liftL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         liftR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         sensorL = map.get(ColorRangeSensor.class, "sensorL");
         sensorR = map.get(ColorRangeSensor.class, "sensorR");
@@ -109,6 +114,12 @@ public class Lift
         //tele.addData("clawLPos", clawLPos);
         //tele.addData("clawRPos", clawRPos);
         //tele.update();
+    }
+
+    public void setLiftLimited(double power) {
+        if(slide.getCurrentPosition()<=0 || power<0) {
+            slide.setPower(power);
+        }
     }
 
     public void setLiftPowerBetter(double power) {

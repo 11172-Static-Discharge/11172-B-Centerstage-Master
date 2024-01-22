@@ -53,7 +53,6 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
         //Slide slide = new Slide(telemetry, hardwareMap);
 
         DcMotorEx slide = hardwareMap.get(DcMotorEx.class, "slide");
-        DcMotorEx winch = hardwareMap.get(DcMotorEx.class, "winch");
         ColorRangeSensor sensorL = hardwareMap.get(ColorRangeSensor.class, "sensorL");
         ColorRangeSensor sensorR = hardwareMap.get(ColorRangeSensor.class, "sensorR");
         Lift lift = new Lift(telemetry, hardwareMap);
@@ -116,7 +115,6 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
                 double slideSpeed = gamepad1.right_bumper ? -0.5 : gamepad1.right_trigger;
                 double winchSpeed = gamepad1.left_bumper ? 1 : -gamepad1.left_trigger;
                 slide.setPower(slideSpeed);
-                winch.setPower(winchSpeed);
             }
 
             else {
@@ -206,8 +204,8 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
             //if(gamepad1.y) lift.setLauncher(1);
 
 
-            lift.setRightClaw(rClosed);
-            lift.setLeftClaw(lClosed);
+            //lift.setRightClaw(rClosed);
+            //lift.setLeftClaw(lClosed);
             drive.update();
 
             lift.calWrist(bGamepad2.dpad_up(), bGamepad2.dpad_down());
