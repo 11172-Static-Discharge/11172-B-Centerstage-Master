@@ -34,7 +34,7 @@ public class DispenserBLUEBACKBOARD extends LinearOpMode
     raise threshold for accuracy
     */
     private static final String[] labels = {"BlueElementv2", "RedElementv2"};
-    private static final String TFOD_MODEL_ASSET = "/sdcard/FIRST/tflitemodels/ModelMoreTraining.tflite";
+    private static final String TFOD_MODEL_ASSET = "/sdcard/FIRST/tflitemodels/RedBlueModel.tflite";
 
 
 
@@ -57,6 +57,13 @@ public class DispenserBLUEBACKBOARD extends LinearOpMode
     public boolean leftPark = true;
     public double tapeOffset = 0;
 
+    public double pickup = Lift.wristPickup;
+    public double hover = Lift.wristHover;
+
+    public double dispense = Lift.dispenseDrop;
+    public double launch = Lift.dispenseLaunch;
+
+
 
     @Override
     public void runOpMode() throws InterruptedException
@@ -69,62 +76,54 @@ public class DispenserBLUEBACKBOARD extends LinearOpMode
 
         TrajectorySequence middle = drive.trajectorySequenceBuilder(new Pose2d())
                 .lineTo(new Vector2d(-8, 44))
-                .build();
+                .build();//TO TAPE
 
         TrajectorySequence middle2 = drive.trajectorySequenceBuilder(middle.end())
-                .lineTo(new Vector2d(-38,  42))
-                .build();
-
-        TrajectorySequence middle3 = drive.trajectorySequenceBuilder(middle2.end())
                 .lineTo(new Vector2d(-42,  42),
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .build();
+                .build();//GO TO BACKBOARD
 
         //har har har ah r arh a
 
-        TrajectorySequence middle4 = drive.trajectorySequenceBuilder(middle3.end())
+        TrajectorySequence middle3 = drive.trajectorySequenceBuilder(middle2.end())
                 .lineTo(new Vector2d(-32,  42))
-                .build();
+                .build();//REVERSE FROM BOARD
 
         TrajectorySequence right = drive.trajectorySequenceBuilder(new Pose2d())
                 .lineTo(new Vector2d(0, 35))
                 .lineTo(new Vector2d(12, 35))
-                .lineTo(new Vector2d(4.1,  35))
-                .build();
+                .lineTo(new Vector2d(5,  35))
+                .build();//TAPE
+
 
         TrajectorySequence right2 = drive.trajectorySequenceBuilder(right.end())
-                .lineTo(new Vector2d(-38,  48))
-                .build();
+                .lineTo(new Vector2d(-25,  35),
+                        SampleMecanumDrive.getVelocityConstraint(45, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .lineTo(new Vector2d(-38,  52),
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .build();//GO TO BOARD
 
         TrajectorySequence right3 = drive.trajectorySequenceBuilder(right2.end())
-                .lineTo(new Vector2d(-42,  48),
-                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .build();
-
-        TrajectorySequence right4 = drive.trajectorySequenceBuilder(right3.end())
-                .lineTo(new Vector2d(-32,  48))
-                .build();
+                .lineTo(new Vector2d(-32,  52))
+                .build();//REVERSE FROM BOARD
 
         TrajectorySequence left = drive.trajectorySequenceBuilder(new Pose2d())
                 .lineTo(new Vector2d(-20, 35))
-                .lineTo(new Vector2d(-24, 34.5))
-                .build();
+                .lineTo(new Vector2d(-18, 34.5))
+                .build();//TAPE
 
         TrajectorySequence left2 = drive.trajectorySequenceBuilder(left.end())
-                .lineTo(new Vector2d(-38,  34.5))
-                .build();
-
-        TrajectorySequence left3 = drive.trajectorySequenceBuilder(left2.end())
-                .lineTo(new Vector2d(-42,  34.5),
+                .lineTo(new Vector2d(-38,  29.5),
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .build();
+                .build();//GO TO BOARD
 
-        TrajectorySequence left4 = drive.trajectorySequenceBuilder(left3.end())
-                .lineTo(new Vector2d(-32,  34.5))
-                .build();
+        TrajectorySequence left3 = drive.trajectorySequenceBuilder(left2.end())
+                .lineTo(new Vector2d(-32,  29.5))
+                .build();//REVERSE FROM BOARD
 
 
         while (!isStarted()) {
@@ -132,7 +131,11 @@ public class DispenserBLUEBACKBOARD extends LinearOpMode
             telemetry.update();
             lift.setRightClaw(true);
             lift.setLeftClaw(true);
-            path = getSide();
+
+
+            if(gamepad1.dpad_right) path = "right";
+            if(gamepad1.dpad_left)  path = "left";
+            //path = getSide();
 
             if(gamepad1.dpad_left) leftPark = true;
             else if(gamepad1.dpad_right) leftPark = false;
@@ -148,45 +151,42 @@ public class DispenserBLUEBACKBOARD extends LinearOpMode
         {
             case "left":
                 drive.followTrajectorySequence(left);
-                lift.setWristPosFixed(0.875);
+                lift.setWristPosFixed(pickup);
                 sleep(700);
                 lift.setLeftClaw(false);
                 sleep(500);
-                lift.setWristPosFixed(0.25);
+                lift.setWristPosFixed(hover);
                 drive.followTrajectorySequence(left2);
-                drive.followTrajectorySequence(left3);
-                lift.setDispenser(0);
+                lift.setDispenser(dispense);
                 sleep(2000);
-                lift.setDispenser(0.15);
-                drive.followTrajectorySequence(left4);
+                //lift.setDispenser(launch);
+                drive.followTrajectorySequence(left3);
                 break;
             case "right":
                 drive.followTrajectorySequence(right);
-                lift.setWristPosFixed(0.875);
+                lift.setWristPosFixed(pickup);
                 sleep(700);
                 lift.setLeftClaw(false);
                 sleep(500);
-                lift.setWristPosFixed(0.25);
+                lift.setWristPosFixed(hover);
                 drive.followTrajectorySequence(right2);
-                drive.followTrajectorySequence(right3);
-                lift.setDispenser(0);
+                lift.setDispenser(dispense);
                 sleep(2000);
-                lift.setDispenser(0.15);
-                drive.followTrajectorySequence(right4);
+                //lift.setDispenser(launch);
+                drive.followTrajectorySequence(right3);
                 break;
             case "middle":
                 drive.followTrajectorySequence(middle);
-                lift.setWristPosFixed(0.875);
+                lift.setWristPosFixed(pickup);
                 sleep(700);
                 lift.setLeftClaw(false);
                 sleep(500);
-                lift.setWristPosFixed(0.25);
+                lift.setWristPosFixed(hover);
                 drive.followTrajectorySequence(middle2);
-                drive.followTrajectorySequence(middle3);
-                lift.setDispenser(0);
+                lift.setDispenser(dispense);
                 sleep(2000);
-                lift.setDispenser(0.15);
-                drive.followTrajectorySequence(middle4);
+                //lift.setDispenser(launch);
+                drive.followTrajectorySequence(middle3);
                 break;
         }
 
@@ -280,7 +280,7 @@ public class DispenserBLUEBACKBOARD extends LinearOpMode
         visionPortal = builder.build();
 
         // Set confidence threshold for TFOD recognitions, at any time.
-        tfod.setMinResultConfidence(0.8f);
+        tfod.setMinResultConfidence(0.7f);
 
         // Disable or re-enable the TFOD processor at any time.
         //visionPortal.setProcessorEnabled(tfod, true);
@@ -297,7 +297,7 @@ public class DispenserBLUEBACKBOARD extends LinearOpMode
             else if (recognition.get(i).getLeft() > 120) return "middle";
             else if (recognition.get(i).getLeft() <= 120) return "left";
         }
-        return "left";
+        return "right";
 
     }
 
@@ -320,7 +320,7 @@ public class DispenserBLUEBACKBOARD extends LinearOpMode
         timer.reset();
         while(timer.milliseconds() <= milliseconds)
         {
-            lift.moveToPower(targetPos, power);
+            lift.moveToPower(targetPos, power, false);
             lift.setLeftClaw(clawL);
             lift.setRightClaw(clawR);
             lift.setWristPosFixed(wristPos);

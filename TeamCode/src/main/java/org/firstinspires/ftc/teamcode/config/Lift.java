@@ -31,6 +31,16 @@ public class Lift
 
     double autoClawOpen = 1;
 
+
+    public static double wristHigh = 0.07;
+    public static double wristMid = 0.19;
+    public static double wristHover = 0.25;
+
+    public static double wristPickup = 0.65;
+
+    public static volatile double dispenseDrop = 0.11;
+    public static volatile double dispenseLaunch = 0.2;
+
     double clawLPos = 0, clawRPos = 0;
 
     public boolean autoClosedL = false, autoClosedR = false;
@@ -77,9 +87,9 @@ public class Lift
         arm.moveTo(target);
     }
 
-    public void moveToPower(int target, double power)
+    public void moveToPower(int target, double power, boolean stopFinal)
     {
-        arm.moveToPower(target, power);
+        arm.moveToPower(target, power, stopFinal);
     }
     public void setLiftPower(double woman, double right)
     {

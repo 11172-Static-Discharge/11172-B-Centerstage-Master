@@ -123,7 +123,10 @@ public class Meet3Auto_BLUE_FAR extends LinearOpMode
             telemetry.update();
             lift.setRightClaw(true);
             lift.setLeftClaw(true);
-            path = getSide();
+
+            if(gamepad1.dpad_right) path = "right";
+            if(gamepad1.dpad_left)  path = "left";
+            //path = getSide();
 
             lift.arm.reset();
         }
@@ -276,13 +279,13 @@ public class Meet3Auto_BLUE_FAR extends LinearOpMode
      */
     private String getSide() {
         List<Recognition> recognition = tfod.getRecognitions();
-        if (recognition.isEmpty()) return "left";
+        if (recognition.isEmpty()) return "right";
         for (int i = 0; i<recognition.size(); i++) {
             if (recognition.get(i).getWidth()>250 || recognition.get(i).getHeight()>250) {}
-            else if (recognition.get(i).getLeft() > 275) return "middle";
-            else if (recognition.get(i).getLeft() <= 275) return "right";
+            else if (recognition.get(i).getLeft() > 120) return "middle";
+            else if (recognition.get(i).getLeft() <= 120) return "left";
         }
-        return "left";
+        return "right";
 
     }
 
@@ -305,7 +308,7 @@ public class Meet3Auto_BLUE_FAR extends LinearOpMode
         timer.reset();
         while(timer.milliseconds() <= milliseconds)
         {
-            lift.moveToPower(targetPos, power);
+            lift.moveToPower(targetPos, power, false);
             lift.setLeftClaw(clawL);
             lift.setRightClaw(clawR);
             lift.setWristPosFixed(wristPos);

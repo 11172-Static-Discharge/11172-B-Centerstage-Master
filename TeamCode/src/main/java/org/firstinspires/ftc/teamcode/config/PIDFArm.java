@@ -72,10 +72,19 @@ public class PIDFArm {
         tele.update();
     }
 
-    public void moveToPower(int targetPos, double pow) {
+    public void moveToPower(int targetPos, double pow, boolean stopFinal) {
         controller.setPID(p,i,d);
         int lPos = l.getCurrentPosition();
         if(lPos > 0) return;
+
+        int tolerance = 5;
+
+        if(stopFinal && Math.abs(lPos - targetPos) >= tolerance)
+        {
+            l.setPower(0);
+            r.setPower(0);
+            return;
+        }
 
         double pid = controller.calculate(lPos, targetPos);
 

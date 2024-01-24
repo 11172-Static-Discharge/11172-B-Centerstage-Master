@@ -129,10 +129,10 @@ public class LiftTele extends LinearOpMode {
 
                 if(gamepad1.dpad_down)
                 {
-                    liftPos = -13;
+                    liftPos = -20;
                     lift.setWristPosFixed(0.85);
                 }
-                lift.moveToPower(liftPos, powMultiplier);
+                lift.moveToPower(liftPos, powMultiplier, (liftPos == 20));
             }
 
 

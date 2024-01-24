@@ -17,8 +17,8 @@ import org.firstinspires.ftc.teamcode.config.Lift;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @Config
-@TeleOp(name = "PoopTeleOp", group = "drive")
-public class PoopTeleOp extends OpMode {
+@TeleOp(name = "PoopTeleNoMove", group = "drive")
+public class PooopTEleNoMOve extends OpMode {
 
     public PIDController lcontroller, rcontroller;
     public static double p=0.1,i=0,d=0.0001,f=0.22;
@@ -51,8 +51,6 @@ public class PoopTeleOp extends OpMode {
     public boolean autoClose;
     public double wristPos;
 
-    public double powMultiplier = 1;
-
 
     public void init() {
         lcontroller = new PIDController(p, i, d);
@@ -72,11 +70,8 @@ public class PoopTeleOp extends OpMode {
 
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        slide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        slide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
+        //slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //slide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         lift.setDispenser(1);
 
@@ -98,29 +93,25 @@ public class PoopTeleOp extends OpMode {
         interpolate = false;
     }
     public void loop() {
-        drive.setWeightedDrivePower(
-                new Pose2d(
-                        Math.abs(gamepad2.left_stick_y) > deadzone ? -gamepad2.left_stick_y * speed : 0,
-                        Math.abs(gamepad2.left_stick_x) > deadzone ?-gamepad2.left_stick_x * speed : 0,
-                        Math.abs(gamepad2.right_stick_x) > deadzone ?-gamepad2.right_stick_x * speed : 0
-                )
-        );
+        //drive.setWeightedDrivePower(
+          ///      new Pose2d(
+             //           Math.abs(gamepad2.left_stick_y) > deadzone ? -gamepad2.left_stick_y * speed : 0,
+               //         Math.abs(gamepad2.left_stick_x) > deadzone ?-gamepad2.left_stick_x * speed : 0,
+                 //       Math.abs(gamepad2.right_stick_x) > deadzone ?-gamepad2.right_stick_x * speed : 0
+                //)
+        //);
 
         if(gamepad2.share) requestOpModeStop();
-        if(gamepad2.y) lift.setLauncher(0);
+        if(gamepad2.square) lift.setLauncher(0);
 
-        if(bGamepad2.a()) speed = (speed == 0.65) ? 0.29 : 0.65;
-        if(bGamepad1.x()) powMultiplier = (powMultiplier == 1) ? 0.3 : 1;
+        double slideSpeed = gamepad2.right_bumper ? 1 : -gamepad2.right_trigger;
+        slide.setPower(slideSpeed);
 
-
-        double slideSpeed = gamepad2.right_bumper ? -1 : gamepad2.right_trigger;
-
-        if(slide.getCurrentPosition()<0 || slideSpeed<0) {
+        /*
+        if(slide.getPosition()><0 || power<0) {
             slide.setPower(slideSpeed);
-        }else
-        {
-            slide.setPower(0);
         }
+        */
 
         if(bGamepad1.right_bumper()) rClosed = !rClosed;
         if(bGamepad1.left_bumper()) lClosed = !lClosed;
@@ -128,40 +119,32 @@ public class PoopTeleOp extends OpMode {
         lift.setRightClaw(rClosed);
         lift.setLeftClaw(lClosed);
 
-        //lift.calWrist(bGamepad2.dpad_up(), bGamepad2.dpad_down());
-        //lift.calDispenser(bGamepad2.dpad_left(), bGamepad1.dpad_right());
 
         telemetry.addData("Wrist Pos", lift.getWristPos());
         telemetry.addData("Lift Pos", l.getCurrentPosition());
         telemetry.addData("Target Lift Pos", targetL);
         telemetry.addData("Slide Pos", slide.getCurrentPosition());
-        telemetry.addData("Lin Reg Mode", linRegMode);
 
 
-        if(bGamepad1.y())
+        /*if(bGamepad1.y())
         {
             lift.setWristPosFixed(lift.getWristPos() - 0.02);
             offset -= 0.02;
         }
-        if(bGamepad1.b()) {
+        if(bGamepad1.a())
+        {
             lift.setWristPosFixed(lift.getWristPos() + 0.02);
             offset += 0.02;
-        }
+        }*/
 
-
-
-        if(gamepad1.square)
-        {
-            liftPos = 5;
-            lift.setWristPosFixed(Lift.wristHover);
-        }
+        if(gamepad1.square) lift.setWristPosFixed(0.25);
         if(gamepad1.share) lift.setDispenser(1);
 
         //LIFT STUFF HERE
         if(Math.abs(gamepad1.left_stick_y) >= 0.2)
         {
-            l.setPower(gamepad1.left_stick_y * (gamepad1.share ? (1) : 0.5));
-            r.setPower(gamepad1.left_stick_y * (gamepad1.share ? (1) : 0.5));
+            l.setPower(gamepad1.left_stick_y * (gamepad1.share ? 1 : 0.5));
+            r.setPower(gamepad1.left_stick_y * (gamepad1.share ? 1 : 0.5));
             targetL = l.getCurrentPosition();
             return;
         }
@@ -170,47 +153,30 @@ public class PoopTeleOp extends OpMode {
         if(gamepad1.dpad_left)
         {
             targetL = -130;
-            lift.setWristPosFixed(Lift.wristMid);
+            lift.setWristPosFixed(0.28);
         }
 
         if(gamepad1.dpad_up)
         {
             targetL = -115;
-            lift.setWristPosFixed(Lift.wristHigh);
+            lift.setWristPosFixed(0.22);
         }
 
         if(gamepad1.dpad_right)
         {
-            targetL = -40;
-            lift.setWristPosFixed(0);
+            targetL = -20;
+            lift.setWristPosFixed(0.25);
         }
-
-        /*if(gamepad1.dpad_down) {
-            targetL = 5;
-            lift.setWristPosFixed((lPos-targetL < -100 ? 0: Lift.wristHover);
-        }*/
 
         if(gamepad1.dpad_down)
         {
-            targetL = 5;
-            lift.setWristPosFixed(Lift.wristPickup);
+            targetL = -13;
+            lift.setWristPosFixed(0.7625);
         }
 
-        lcontroller.setPID((p * powMultiplier),i,d);
-
+        lcontroller.setPID(p,i,d);
         int lPos = l.getCurrentPosition();
-
-        if(lPos > 0 || ((liftPos == 5 || liftPos == -20) && Math.abs(lPos - targetL) < 5))
-        {
-            l.setPower(0);
-            r.setPower(0);
-            telemetry.addData("PEEEEPEE", true);
-            telemetry.update();
-            return;
-        }
-
-
-
+        if(lPos > 0) return;
 
         double pid = lcontroller.calculate(lPos, targetL);
 
@@ -225,6 +191,4 @@ public class PoopTeleOp extends OpMode {
         telemetry.addData("lTarget: ", targetL);
         telemetry.update();
     }
-
-    public double wristReg(int liftPos){return (double)liftPos * -0.008 - 0.85;}
 }

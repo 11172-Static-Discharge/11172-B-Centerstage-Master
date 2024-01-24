@@ -18,8 +18,8 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-@Autonomous (name = "RED_FINAL", group = "autos")
-public class FINALREDAUTO extends LinearOpMode
+@Autonomous (name = "DispenserBLUE_FAR", group = "autos")
+public class DispenserBLUE_FAR extends LinearOpMode
 {    private static final boolean USE_WEBCAM = true;  // true for webcam, false for phonhie camera
 
     /**
@@ -52,10 +52,17 @@ public class FINALREDAUTO extends LinearOpMode
     public int sign = 1;
 
     public double dropXPos = -20  + xOffset;
-    public int dropLiftPos = -400;
+    public int dropLiftPos = -1900;
 
     public boolean leftPark = true;
     public double tapeOffset = 0;
+
+    public double pickup = Lift.wristPickup;
+    public double hover = Lift.wristHover;
+
+    public double dispense = Lift.dispenseDrop;
+    public double launch = Lift.dispenseLaunch;
+
 
 
     @Override
@@ -68,88 +75,74 @@ public class FINALREDAUTO extends LinearOpMode
         initTfod();
 
         TrajectorySequence right = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineTo(new Vector2d(30, 48))
-                .lineTo(new Vector2d(37.5, 41))
-                .build();
+                .lineTo(new Vector2d(5, 2))
+                .lineTo(new Vector2d(5, 34))
+                .build();//TAPE
 
+        /*TrajectorySequence rightCross = drive.trajectorySequenceBuilder(right.end())
+                .lineTo(new Vector2d(-16.5, 34),
+                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .lineTo(new Vector2d(-16.5, 34 + 30),
+                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .build();*/
 
-        TrajectorySequence right2 = drive.trajectorySequenceBuilder(right.end())
-                .lineTo(new Vector2d(40, 30.5))
-                .lineTo(new Vector2d(54, 30.5))
-                .build();
-
-        TrajectorySequence right3 = drive.trajectorySequenceBuilder(right2.end())
-                .lineTo(new Vector2d(62, 30.5),
+        TrajectorySequence rightCross = drive.trajectorySequenceBuilder(right.end())
+                .lineTo(new Vector2d(5, 34 + 30))
+                .lineTo(new Vector2d(-22, 34 + 30),
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
 
-                .build();
-
-        TrajectorySequence right4 = drive.trajectorySequenceBuilder(right3.end())
-                .lineTo(new Vector2d(53, 30.5))
-                .build();
-
-
-        TrajectorySequence middle = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineTo(new Vector2d(16, 50.5))
-                .lineTo(new Vector2d(28, 45.5))
-                .build();
-
-
-        TrajectorySequence middle2 = drive.trajectorySequenceBuilder(middle.end())
-                .lineTo(new Vector2d(40, 30))
-                .lineTo(new Vector2d(54, 30))
-                .build();
-
-        TrajectorySequence middle3 = drive.trajectorySequenceBuilder(middle2.end())
-                .lineTo(new Vector2d(68, 30),
-                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .build();
-
-        TrajectorySequence middle4 = drive.trajectorySequenceBuilder(middle3.end())
-                .lineTo(new Vector2d(59, 30))
-                .lineTo(new Vector2d(59, 25))
-                .build();
+                .lineTo(new Vector2d(-22, 45))
+                .build();//CROSS UNDER TRUSS
 
 
 
         TrajectorySequence left = drive.trajectorySequenceBuilder(new Pose2d())
                 .lineTo(new Vector2d(5, 2))
-                .lineTo(new Vector2d(10, 36))
-                .lineTo(new Vector2d(-1, 36))
-                .lineTo(new Vector2d(15, 36))
-                .build();
-
-        TrajectorySequence left2 = drive.trajectorySequenceBuilder(left.end())
-                .lineTo(new Vector2d(40, 51.5))
-                .lineTo(new Vector2d(54, 51.5))
-                .build();
-
-        TrajectorySequence left3 = drive.trajectorySequenceBuilder(left2.end())
-                .lineTo(new Vector2d(62, 51.5),
+                .lineTo(new Vector2d(5, 34))
+                .lineTo(new Vector2d(-11, 34),
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .build();
+                .build();//TAPE
 
-        TrajectorySequence left4 = drive.trajectorySequenceBuilder(left3.end())
-                .lineTo(new Vector2d(49, 51.5))
-                .lineTo(new Vector2d(55, 25))
-                .build();
+        TrajectorySequence leftCross = drive.trajectorySequenceBuilder(left.end())
+                .lineTo(new Vector2d(-31, 34),
+                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .lineTo(new Vector2d(-31, 34 + 30))
+                .build();//CROSS THROUGH TRUSS
+
+        TrajectorySequence middle = drive.trajectorySequenceBuilder(new Pose2d())
+                .lineTo(new Vector2d(5, 2))
+                .lineTo(new Vector2d(5, 38))
+                .lineToLinearHeading(new Pose2d(5, 37, Math.toRadians(90)))
+                .build();//GO FORWARD, ROTATE AND GET READY TO SCORE FOR TAPE
+
+        TrajectorySequence middleCross = drive.trajectorySequenceBuilder(middle.end())
+                .lineTo(new Vector2d(5, 25))
+                .lineToLinearHeading(new Pose2d(5, 26, Math.toRadians(0)))
+                .lineTo(new Vector2d(5, 34 + 30))
+                .lineTo(new Vector2d(dropXPos - 1, 34 + 30))
+
+                .lineTo(new Vector2d(dropXPos - 1, 37))
+                .build();//AFTER SCORING ON TAPE, ROTATE AND PASS THROUGH TRUSS
+
 
         while (!isStarted()) {
-            path = getSide();
-            telemetry.addData("path: ", path);
-            telemetry.addLine();
             telemetryTfod();
             telemetry.update();
             lift.setRightClaw(true);
             lift.setLeftClaw(true);
 
+
+            if(gamepad1.dpad_right) path = "right";
+            if(gamepad1.dpad_left)  path = "left";
+            //path = getSide();
+
             if(gamepad1.dpad_left) leftPark = true;
             else if(gamepad1.dpad_right) leftPark = false;
-
-            lift.arm.reset();
         }
 
         waitForStart();
@@ -162,69 +155,35 @@ public class FINALREDAUTO extends LinearOpMode
         {
             case "left":
                 drive.followTrajectorySequence(left);
-                sleepLiftPower(2000, lift, -2400, true, true, 0.23, offset, 4);
-                /*0power*/sleepLiftPower(100, lift, -2400, true, true, 0.23, offset, 0);
-
-                sleep(1000);
+                lift.setWristPosFixed(pickup);
+                sleep(700);
                 lift.setLeftClaw(false);
-                sleep(1000);
-                sleepLiftPower(2000, lift, 0, true, true, 0.25, offset, 1);
-                /*0power*/sleepLiftPower(2000, lift, 0, true, true, 0.25, offset, 0);
-                drive.followTrajectorySequence(left2);
-                drive.followTrajectorySequence(left3);
-                sleepLiftPower(1000, lift, dropLiftPos, true, true, 0.25, offset, 0.5);
-                //drive.followTrajectorySequence(middle3);
-                sleepLiftPower(1000, lift, 0, true, true, 0.69, offset, 0);
-                lift.setRightClaw(false);
-                sleep(1000);
-                drive.followTrajectorySequence(left4);
-                //sleepLift(750, lift, dropLiftPos, false, false, 0.42, offset);
+                sleep(500);
+                lift.setWristPosFixed(hover);
+                //drive.followTrajectorySequence(leftCross);
                 break;
             case "right":
                 drive.followTrajectorySequence(right);
-                sleepLiftPower(2000, lift, -2400, true, true, 0.23, offset, 4);
-                /*0power*/sleepLiftPower(100, lift, -2400, true, true, 0.23, offset, 0);
-
-                sleep(1000);
+                lift.setWristPosFixed(pickup);
+                sleep(700);
                 lift.setLeftClaw(false);
-                sleep(1000);
-                sleepLiftPower(2000, lift, 0, true, true, 0.25, offset, 1);
-                /*0power*/sleepLiftPower(2000, lift, 0, true, true, 0.25, offset, 0);
-                drive.followTrajectorySequence(right2);
-                drive.followTrajectorySequence(right3);
-                sleepLiftPower(1000, lift, dropLiftPos, true, true, 0.25, offset, 0.5);
-                //drive.followTrajectorySequence(middle3);
-                sleepLiftPower(1000, lift, 0, true, true, 0.69, offset, 0);
-                lift.setRightClaw(false);
-                sleep(1000);
-                drive.followTrajectorySequence(right4);
-                //sleepLift(750, lift, dropLiftPos, false, false, 0.42, offset);
+                sleep(500);
+                lift.setWristPosFixed(hover);
+                drive.followTrajectorySequence(rightCross);
                 break;
             case "middle":
                 drive.followTrajectorySequence(middle);
-                sleepLiftPower(2000, lift, -2400, true, true, 0.23, offset, 4);
-                /*0power*/sleepLiftPower(100, lift, -2400, true, true, 0.23, offset, 0);
-
-                sleep(1000);
+                lift.setWristPosFixed(pickup);
+                sleep(700);
                 lift.setLeftClaw(false);
-                sleep(1000);
-                sleepLiftPower(2000, lift, 0, true, true, 0.25, offset, 1);
-                /*0power*/sleepLiftPower(2000, lift, 0, true, true, 0.25, offset, 0);
-                drive.followTrajectorySequence(middle2);
-                drive.followTrajectorySequence(middle3);
-                sleepLiftPower(1000, lift, dropLiftPos, true, true, 0.25, offset, 0.5);
-                //drive.followTrajectorySequence(middle3);
-                sleepLiftPower(1000, lift, 0, true, true, 0.69, offset, 0);
-                lift.setRightClaw(false);
-                sleep(1000);
-                drive.followTrajectorySequence(middle4);
-                //sleepLift(750, lift, dropLiftPos, false, false, 0.42, offset);
+                sleep(500);
+                lift.setWristPosFixed(hover);
                 break;
         }
 
         Pose2d myPose = drive.getPoseEstimate();
 
-        TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(myPose)
+       /* TrajectorySequence parkLeft = drive.trajectorySequenceBuilder(myPose)
                 .lineTo(new Vector2d(-24, 36))
                 .lineTo(new Vector2d(-24, 9))
                 .lineTo(new Vector2d(-36, 9))
@@ -237,7 +196,7 @@ public class FINALREDAUTO extends LinearOpMode
                 .build();
 
 
-        // drive.followTrajectorySequence(leftPark ? parkLeft : parkRight);
+        drive.followTrajectorySequence(leftPark ? parkLeft : parkRight);*/
 
     }
     private void telemetryTfod() {
@@ -312,7 +271,7 @@ public class FINALREDAUTO extends LinearOpMode
         visionPortal = builder.build();
 
         // Set confidence threshold for TFOD recognitions, at any time.
-        tfod.setMinResultConfidence(0.8f);
+        tfod.setMinResultConfidence(0.7f);
 
         // Disable or re-enable the TFOD processor at any time.
         //visionPortal.setProcessorEnabled(tfod, true);
@@ -325,11 +284,9 @@ public class FINALREDAUTO extends LinearOpMode
         List<Recognition> recognition = tfod.getRecognitions();
         if (recognition.isEmpty()) return "right";
         for (int i = 0; i<recognition.size(); i++) {
-            if ((recognition.get(i).getWidth()<250 && recognition.get(i).getHeight()<350)) {
-                if (recognition.get(i).getLeft() > 275) return "middle";
-                else if(recognition.get(i).getLeft() <= 275) return "left";
-
-            }
+            if (recognition.get(i).getWidth()>250 || recognition.get(i).getHeight()>250) {}
+            else if (recognition.get(i).getLeft() > 120) return "middle";
+            else if (recognition.get(i).getLeft() <= 120) return "left";
         }
         return "right";
 

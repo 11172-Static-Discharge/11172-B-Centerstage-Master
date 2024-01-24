@@ -348,7 +348,7 @@ public class FINALBLUEAUTO extends LinearOpMode
         timer.reset();
         while(timer.milliseconds() <= milliseconds)
         {
-            lift.moveToPower(targetPos, power);
+            lift.moveToPower(targetPos, power, false);
             lift.setLeftClaw(clawL);
             lift.setRightClaw(clawR);
             lift.setWristPosFixed(wristPos);

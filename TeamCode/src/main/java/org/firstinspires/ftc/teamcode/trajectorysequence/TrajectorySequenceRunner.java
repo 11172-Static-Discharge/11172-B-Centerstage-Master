@@ -95,7 +95,7 @@ public class TrajectorySequenceRunner {
     }
 
     public void followTrajectorySequenceAsyncLift(TrajectorySequence trajectorySequence, Lift lift, int targetPos, boolean clawR, boolean clawL, double wristPos, int offset, double power) {
-        lift.moveToPower(targetPos, power);
+        lift.moveToPower(targetPos, power, false);
         lift.setLeftClaw(clawL);
         lift.setRightClaw(clawR);
         lift.setWristPosFixed(wristPos);

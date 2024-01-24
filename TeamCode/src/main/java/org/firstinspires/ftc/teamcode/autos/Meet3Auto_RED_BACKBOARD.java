@@ -322,7 +322,7 @@ public class Meet3Auto_RED_BACKBOARD extends LinearOpMode
         timer.reset();
         while(timer.milliseconds() <= milliseconds)
         {
-            lift.moveToPower(targetPos, power);
+            lift.moveToPower(targetPos, power, false);
             lift.setLeftClaw(clawL);
             lift.setRightClaw(clawR);
             lift.setWristPosFixed(wristPos);
