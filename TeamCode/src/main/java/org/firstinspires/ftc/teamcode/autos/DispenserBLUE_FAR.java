@@ -76,7 +76,8 @@ public class DispenserBLUE_FAR extends LinearOpMode
 
         TrajectorySequence right = drive.trajectorySequenceBuilder(new Pose2d())
                 .lineTo(new Vector2d(5, 2))
-                .lineTo(new Vector2d(5, 34))
+                .lineToConstantHeading(new Vector2d(8, 39))
+                .lineToConstantHeading(new Vector2d(5, 34))
                 .build();//TAPE
 
         /*TrajectorySequence rightCross = drive.trajectorySequenceBuilder(right.end())
@@ -89,7 +90,7 @@ public class DispenserBLUE_FAR extends LinearOpMode
                 .build();*/
 
         TrajectorySequence rightCross = drive.trajectorySequenceBuilder(right.end())
-                .lineTo(new Vector2d(5, 34 + 30))
+                .lineTo(new Vector2d(9, 34 + 30))
                 .lineTo(new Vector2d(-22, 34 + 30),
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))

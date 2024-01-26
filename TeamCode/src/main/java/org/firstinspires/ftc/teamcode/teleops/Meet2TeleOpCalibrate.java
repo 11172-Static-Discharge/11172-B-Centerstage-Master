@@ -42,6 +42,8 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
     public boolean rClosed, lClosed;
     public boolean positionSet, interpolate;
 
+    public DcMotor fl, fr, bl, br;
+
     public int liftPos;
     public boolean autoClose;
     public double wristPos;
@@ -66,6 +68,11 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
 
         lift.liftL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         lift.liftR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        fl = hardwareMap.dcMotor.get("motorFL");
+        fr = hardwareMap.dcMotor.get("motorFR");
+        bl = hardwareMap.dcMotor.get("motorBL");
+        br = hardwareMap.dcMotor.get("motorBR");
 
         rClosed = true;
         autoClose = false;
@@ -177,6 +184,10 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
             //telemetry.addData("Auto closed L", lift.autoClosedL);
             //telemetry.addData("autoclosed r: ", lift.autoClosedR);
             telemetry.addData("Wrist Pos", lift.getWristPos());
+            telemetry.addData("motorFL", fl.getCurrentPosition());
+            telemetry.addData("motorFR", fr.getCurrentPosition());
+            telemetry.addData("motorBL", bl.getCurrentPosition());
+            telemetry.addData("motorBR", br.getCurrentPosition());
 
 
 

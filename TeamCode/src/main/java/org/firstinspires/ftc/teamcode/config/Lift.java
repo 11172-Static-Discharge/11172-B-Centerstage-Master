@@ -36,10 +36,10 @@ public class Lift
     public static double wristMid = 0.19;
     public static double wristHover = 0.25;
 
-    public static double wristPickup = 0.65;
+    public static double wristPickup = 0.71;
 
-    public static volatile double dispenseDrop = 0.11;
-    public static volatile double dispenseLaunch = 0.2;
+    public static double dispenseDrop = 0.11;
+    public static double dispenseLaunch = 0.2;
 
     double clawLPos = 0, clawRPos = 0;
 

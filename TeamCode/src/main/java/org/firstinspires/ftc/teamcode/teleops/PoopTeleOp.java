@@ -110,7 +110,7 @@ public class PoopTeleOp extends OpMode {
         if(gamepad2.y) lift.setLauncher(0);
 
         if(bGamepad2.a()) speed = (speed == 0.65) ? 0.29 : 0.65;
-        if(bGamepad1.x()) powMultiplier = (powMultiplier == 1) ? 0.3 : 1;
+        if(bGamepad1.a()) powMultiplier = (powMultiplier == 1) ? 0.2 : 1;
 
 
         double slideSpeed = gamepad2.right_bumper ? -1 : gamepad2.right_trigger;
@@ -136,6 +136,7 @@ public class PoopTeleOp extends OpMode {
         telemetry.addData("Target Lift Pos", targetL);
         telemetry.addData("Slide Pos", slide.getCurrentPosition());
         telemetry.addData("Lin Reg Mode", linRegMode);
+        telemetry.addData("Pigga Multipligga", powMultiplier);
 
 
         if(bGamepad1.y())

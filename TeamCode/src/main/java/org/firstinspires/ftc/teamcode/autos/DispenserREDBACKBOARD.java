@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.autos;
 
+import android.graphics.Color;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -75,39 +77,41 @@ public class DispenserREDBACKBOARD extends LinearOpMode
         initTfod();
 
         TrajectorySequence middle = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineTo(new Vector2d(-12.3, -41.3))
+                .lineTo(new Vector2d(-12.3, -42.8))
                 .build();//TO TAPE
 
         TrajectorySequence middle2 = drive.trajectorySequenceBuilder(middle.end())
-                .lineTo(new Vector2d(-42,  -21),
-                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
+                .lineTo(new Vector2d(-48,  -21),
+                        SampleMecanumDrive.getVelocityConstraint(35, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();//GO TO BACKBOARD
 
         //har har har ah r arh a
 
         TrajectorySequence middle3 = drive.trajectorySequenceBuilder(middle2.end())
-                .lineTo(new Vector2d(-32,  -21))
+                .lineTo(new Vector2d(-32,  -21),
+                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();//REVERSE FROM BOARD
 
         TrajectorySequence left = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineTo(new Vector2d(0, -35))
-                .lineTo(new Vector2d(12, -35))
-                .lineTo(new Vector2d(5,  -35))
+                .lineTo(new Vector2d(0, -33))
+                .lineTo(new Vector2d(12, -33))
+                .lineTo(new Vector2d(3,  -33))
                 .build();//TAPE
 
 
         TrajectorySequence left2 = drive.trajectorySequenceBuilder(left.end())
-                .lineTo(new Vector2d(-25,  -35),
-                        SampleMecanumDrive.getVelocityConstraint(45, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
+                .lineTo(new Vector2d(-25,  -28),
+                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineTo(new Vector2d(-38,  -29.5),
+                .lineTo(new Vector2d(-36,  -26),
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();//GO TO BOARD
 
         TrajectorySequence left3 = drive.trajectorySequenceBuilder(left2.end())
-                .lineTo(new Vector2d(-32,  -29.5))
+                .lineTo(new Vector2d(-32,  -28))
                 .build();//REVERSE FROM BOARD
 
         TrajectorySequence right = drive.trajectorySequenceBuilder(new Pose2d())
@@ -116,7 +120,7 @@ public class DispenserREDBACKBOARD extends LinearOpMode
                 .build();//TAPE
 
         TrajectorySequence right2 = drive.trajectorySequenceBuilder(right.end())
-                .lineTo(new Vector2d(-38,  -40),
+                .lineTo(new Vector2d(-43,  -42),
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();//GO TO BOARD
@@ -182,7 +186,9 @@ public class DispenserREDBACKBOARD extends LinearOpMode
                 lift.setRightClaw(false);
                 sleep(500);
                 lift.setWristPosFixed(hover);
+                sleep(500);
                 drive.followTrajectorySequence(middle2);
+                sleep(1000);
                 lift.setDispenser(dispense);
                 sleep(2000);
                 //lift.setDispenser(launch);
