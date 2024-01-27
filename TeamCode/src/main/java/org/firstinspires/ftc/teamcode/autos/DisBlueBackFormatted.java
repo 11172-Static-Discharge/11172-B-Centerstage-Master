@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.VisionCamera;
 import org.firstinspires.ftc.teamcode.config.Lift;
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -18,8 +19,8 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-@Autonomous (name = "DispenserBLUEBACKBOARD", group = "autos")
-public class DispenserBLUEBACKBOARD extends LinearOpMode
+@Autonomous (name = "DisBlueBackFormatted", group = "autos")
+public class DisBlueBackFormatted extends LinearOpMode
 {    private static final boolean USE_WEBCAM = true;  // true for webcam, false for phonhie camera
 
     /**
@@ -64,6 +65,7 @@ public class DispenserBLUEBACKBOARD extends LinearOpMode
     public double launch = Lift.dispenseLaunch;
 
     public int tapeVel = 30;
+    public VisionCamera camera;
 
 
 
@@ -73,25 +75,29 @@ public class DispenserBLUEBACKBOARD extends LinearOpMode
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Lift lift = new Lift(telemetry, hardwareMap);
         String path = "middle";
-
-        initTfod();
+        VisionCamera camera = new VisionCamera(hardwareMap, telemetry, "BLUE");
 
         TrajectorySequence middle = drive.trajectorySequenceBuilder(new Pose2d())
+                .lineTo(new Vector2d(-5, 42),
+                        SampleMecanumDrive.getVelocityConstraint(tapeVel, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .lineTo(new Vector2d(-8, 42),
                         SampleMecanumDrive.getVelocityConstraint(tapeVel, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();//TO TAPE
 
         TrajectorySequence middle2 = drive.trajectorySequenceBuilder(middle.end())
-                .lineTo(new Vector2d(-42,  42),
-                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
+                .lineTo(new Vector2d(-44.5,  42),
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();//GO TO BACKBOARD
 
         //har har har ah r arh a
 
         TrajectorySequence middle3 = drive.trajectorySequenceBuilder(middle2.end())
-                .lineTo(new Vector2d(-32,  42))
+                .lineTo(new Vector2d(-32,  42),
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();//REVERSE FROM BOARD
 
         TrajectorySequence right = drive.trajectorySequenceBuilder(new Pose2d())
@@ -124,7 +130,10 @@ public class DispenserBLUEBACKBOARD extends LinearOpMode
                 .lineTo(new Vector2d(-25, 35),
                         SampleMecanumDrive.getVelocityConstraint(tapeVel, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineTo(new Vector2d(-18,  34.5),
+                .lineTo(new Vector2d(-14,  34.5),
+                        SampleMecanumDrive.getVelocityConstraint(tapeVel, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .lineTo(new Vector2d(-18, 34.5),
                         SampleMecanumDrive.getVelocityConstraint(tapeVel, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();//TAPE
@@ -141,17 +150,16 @@ public class DispenserBLUEBACKBOARD extends LinearOpMode
 
 
         while (!isStarted()) {
-            telemetryTfod();
+            camera.telemetryTfod();
             telemetry.addData("path: ", path);
-            telemetry.addData("getSide: ", getSide());
+            telemetry.addData("getSide: ", camera.getSide());
             telemetry.update();
             lift.setRightClaw(true);
             lift.setLeftClaw(true);
 
-
+            path = camera.getSide();
             if(gamepad1.dpad_right) path = "right";
             if(gamepad1.dpad_left)  path = "left";
-            //path = getSide();
 
             if(gamepad1.dpad_left) leftPark = true;
             else if(gamepad1.dpad_right) leftPark = false;
@@ -241,81 +249,7 @@ public class DispenserBLUEBACKBOARD extends LinearOpMode
         }   // end for() loop
 
     }   // end method telemetryTfod()
-    private void initTfod() {
 
-        // Create the TensorFlow processor by using a builder.
-        tfod = new TfodProcessor.Builder()
-                .setModelFileName(TFOD_MODEL_ASSET)
-                .setModelLabels(labels)
-                .setIsModelTensorFlow2(true)
-                .setIsModelQuantized(true)
-                .setModelInputSize(300)
-                //.setModelAspectRatio(16.0/9.0)
-
-                // Use setModelAssetName() if the TF Model is built in as an asset.
-                // Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
-                //.setModelAssetName(TFOD_MODEL_ASSET)
-                //.setModelFileName(TFOD_MODEL_FILE)
-
-                //.setModelLabels(LABELS)
-                //.setIsModelTensorFlow2(true)
-                //.setIsModelQuantized(true)
-                //.setModelInputSize(300)
-                //.setModelAspectRatio(16.0 / 9.0)
-
-                .build();
-
-        // Create the vision portal by using a builder.
-        VisionPortal.Builder builder = new VisionPortal.Builder();
-
-        // Set the camera (webcam vs. built-in RC phone camera).
-        if (USE_WEBCAM) {
-            builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 2"));
-        } else {
-            builder.setCamera(BuiltinCameraDirection.BACK);
-        }
-
-        // Choose a camera resolution. Not all cameras support all resolutions.
-        //builder.setCameraResolution(new Size(640, 480));
-
-        // Enable the RC preview (LiveView).  Set "false" to omit camera monitoring.
-        //builder.enableCameraMonitoring(true);
-
-        // Set the stream format; MJPEG uses less bandwidth than default YUY2.
-        //builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
-
-        // Choose whether or not LiveView stops if no processors are enabled.
-        // If set "true", monitor shows solid orange screen if no processors enabled.
-        // If set "false", monitor shows camera view without annotations.
-        //builder.setAutoStopLiveView(false);
-
-        // Set and enable the processor.
-        builder.addProcessor(tfod);
-
-        // Build the Vision Portal, using the above settings.
-        visionPortal = builder.build();
-
-        // Set confidence threshold for TFOD recognitions, at any time.
-        tfod.setMinResultConfidence(0.7f);
-
-        // Disable or re-enable the TFOD processor at any time.
-        //visionPortal.setProcessorEnabled(tfod, true);
-
-    }   // end method initTfod()
-    /**
-     * Add telemetry about TensorFlow Object Detection (TFOD) recognitions.
-     */
-    private String getSide() {
-        List<Recognition> recognition = tfod.getRecognitions();
-        if (recognition.isEmpty()) return "right";
-        for (int i = 0; i<recognition.size(); i++) {
-            if (recognition.get(i).getWidth()>250 || recognition.get(i).getHeight()>250) {}
-            else if (recognition.get(i).getLeft() > 120) return "middle";
-            else if (recognition.get(i).getLeft() <= 120) return "left";
-        }
-        return "right";
-
-    }
 
     private void sleepLift(int milliseconds, Lift lift, int targetPos, boolean clawR, boolean clawL, double wristPos, int offset)
     {

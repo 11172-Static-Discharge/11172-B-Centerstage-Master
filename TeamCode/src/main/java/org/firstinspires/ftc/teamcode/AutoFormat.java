@@ -15,7 +15,7 @@ public class AutoFormat extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         String path = "middle";
-        camera = new VisionCamera(hardwareMap, telemetry);
+        camera = new VisionCamera(hardwareMap, telemetry, "REd");
 
 
         //all your init stuff here

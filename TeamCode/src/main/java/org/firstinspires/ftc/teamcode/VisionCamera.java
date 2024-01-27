@@ -15,11 +15,13 @@ public class VisionCamera {
     public VisionPortal visionPortal;
 
     public Telemetry telemetry;
-    private static final String[] labels = {"BLUE ELEMENT NAME", "RED ELEMENT NAME"};
-    private static final String TFOD_MODEL_ASSET = "/sdcard/FIRST/tflitemodels/YOUR MODEL NAME HERE.tflite";
+    public String color;
+    private static final String[] labels = {"BlueHourGlass", "RedHourGlass"};
+    private static final String TFOD_MODEL_ASSET = "/sdcard/FIRST/tflitemodels/HourglassModel.tflite";
 
-    public VisionCamera(HardwareMap map, Telemetry tele) {
+    public VisionCamera(HardwareMap map, Telemetry tele, String color) {
         telemetry = tele;
+        this.color = color;
         tfod = new TfodProcessor.Builder()
                 .setModelFileName(TFOD_MODEL_ASSET)
                 .setModelLabels(labels)
@@ -27,15 +29,13 @@ public class VisionCamera {
                 .setIsModelQuantized(true)
                 .setModelInputSize(300)
                 .build();
-        tfod.setMinResultConfidence(0.8F);
+        tfod.setMinResultConfidence(0.6F);
 
         visionPortal = new VisionPortal.Builder()
-                .setCamera(map.get(WebcamName.class, "Webcam 1"))
+                .setCamera(map.get(WebcamName.class, (color=="RED" ? "Webcam 1": "Webcam 2")))
                 .addProcessor(tfod)
                 .build();
-        //WILL ONLY SHOW DETECTIONS IF IT IS AT LEAST 80% CONFIDENT
-        //YOU CAN ADJUST THIS
-        tfod.setMinResultConfidence(0.8F);
+        tfod.setMinResultConfidence(0.6F);
     }
 
     public void telemetryTfod() {
@@ -58,19 +58,34 @@ public class VisionCamera {
 
     public String getSide() {
         List<Recognition> recognition = tfod.getRecognitions();
-        if (recognition.isEmpty()) return "left";
-
         //what this does is it checks if the object detected is greater than x value 300 it is on the right
         //if its less than that its on the middle
 
         //OUR BOT IS SET UP SO THAT THE CAMERA CANNOT SEE THE LEFT TAPE
         //therefore if it doesnt detect anything its left
-
-        for (int i = 0; i < recognition.size(); i++) {
-            if (recognition.get(i).getWidth() > 250 || recognition.get(i).getHeight() > 250);
-            else if (recognition.get(i).getLeft() > 300) return "right";
-            else if (recognition.get(i).getLeft() <= 300) return "middle";
+        switch (color) {
+            case "RED":
+                if(recognition.isEmpty()) return "left";
+                for (int i = 0; i < recognition.size(); i++) {
+                    if (recognition.get(i).getWidth() > 250 || recognition.get(i).getHeight() > 300) ;
+                    else if (recognition.get(i).getLeft() > 300)
+                        return "middle";
+                    else if (recognition.get(i).getLeft() <= 300)
+                        return "right";
+                }
+                return "left";
+            case "BLUE":
+                if(recognition.isEmpty()) return "right";
+                for (int i = 0; i < recognition.size(); i++) {
+                    if (recognition.get(i).getWidth() > 250 || recognition.get(i).getHeight() > 300) ;
+                    else if (recognition.get(i).getLeft() > 300)
+                        return "middle";
+                    else if (recognition.get(i).getLeft() <= 300)
+                        return "left";
+                }
+                return "right";
         }
-        return "left";
+        return "middle";
     }
+
 }
