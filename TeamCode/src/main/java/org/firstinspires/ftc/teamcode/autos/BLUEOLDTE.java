@@ -124,12 +124,12 @@ public class BLUEOLDTE extends LinearOpMode
                 .build();//REVERSE FROM BOARD
 
         TrajectorySequence left = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineTo(new Vector2d(-25, 35),
-                        SampleMecanumDrive.getVelocityConstraint(tapeVel, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineTo(new Vector2d(-14,  34.5),
-                        SampleMecanumDrive.getVelocityConstraint(tapeVel, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+//                .lineTo(new Vector2d(-25, 35),
+//                        SampleMecanumDrive.getVelocityConstraint(tapeVel, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
+//                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+//                .lineTo(new Vector2d(-14,  34.5),
+//                        SampleMecanumDrive.getVelocityConstraint(tapeVel, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
+//                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .lineTo(new Vector2d(-18, 34.5),
                         SampleMecanumDrive.getVelocityConstraint(tapeVel, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))

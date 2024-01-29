@@ -39,7 +39,7 @@ public class Lift
     public static double wristPickup = 0.71;
 
     public static double dispenseDrop = 0.11;
-    public static double dispenseLaunch = 0.2;
+    public static  double dispenseLaunch = 0.6;
 
     double clawLPos = 0, clawRPos = 0;
 
@@ -69,9 +69,6 @@ public class Lift
         liftR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        sensorL = map.get(ColorRangeSensor.class, "sensorL");
-        sensorR = map.get(ColorRangeSensor.class, "sensorR");
 
 
         wrist = map.servo.get("wrist");

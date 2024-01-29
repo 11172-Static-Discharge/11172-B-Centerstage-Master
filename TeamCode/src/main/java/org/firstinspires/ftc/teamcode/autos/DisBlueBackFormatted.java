@@ -64,7 +64,7 @@ public class DisBlueBackFormatted extends LinearOpMode
     public double dispense = Lift.dispenseDrop;
     public double launch = Lift.dispenseLaunch;
 
-    public int tapeVel = 30;
+    public int tapeVel = 20;
     public VisionCamera camera;
 
 
@@ -87,7 +87,7 @@ public class DisBlueBackFormatted extends LinearOpMode
                 .build();//TO TAPE
 
         TrajectorySequence middle2 = drive.trajectorySequenceBuilder(middle.end())
-                .lineTo(new Vector2d(-44.5,  42),
+                .lineTo(new Vector2d(-44.5,  39.5),
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();//GO TO BACKBOARD
@@ -95,57 +95,57 @@ public class DisBlueBackFormatted extends LinearOpMode
         //har har har ah r arh a
 
         TrajectorySequence middle3 = drive.trajectorySequenceBuilder(middle2.end())
-                .lineTo(new Vector2d(-32,  42),
+                .lineTo(new Vector2d(-32,  39.5),
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();//REVERSE FROM BOARD
 
         TrajectorySequence right = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineTo(new Vector2d(0, 33),
+                .lineTo(new Vector2d(0, 32),
                         SampleMecanumDrive.getVelocityConstraint(tapeVel, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineTo(new Vector2d(12, 33),
+                .lineTo(new Vector2d(14, 32),
                         SampleMecanumDrive.getVelocityConstraint(tapeVel, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineTo(new Vector2d(4,  33),
+                .lineTo(new Vector2d(4,  32),
                         SampleMecanumDrive.getVelocityConstraint(tapeVel, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();//TAPE
 
 
         TrajectorySequence right2 = drive.trajectorySequenceBuilder(right.end())
-                .lineTo(new Vector2d(-25,  47.6),
+                .lineTo(new Vector2d(-25,  47.9),
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineTo(new Vector2d(-38,  47.6),
+                .lineTo(new Vector2d(-43,  47.9),
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();//GO TO BOARD
 
         TrajectorySequence right3 = drive.trajectorySequenceBuilder(right2.end())
-                .lineTo(new Vector2d(-32,  47.6))
+                .lineTo(new Vector2d(-32,  48.2))
                 .build();//REVERSE FROM BOARD
 
         TrajectorySequence left = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineTo(new Vector2d(-25, 35),
+                .lineTo(new Vector2d(-25, 37),
                         SampleMecanumDrive.getVelocityConstraint(tapeVel, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineTo(new Vector2d(-14,  34.5),
+                .lineTo(new Vector2d(-7,  37),
                         SampleMecanumDrive.getVelocityConstraint(tapeVel, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineTo(new Vector2d(-18, 34.5),
+                .lineTo(new Vector2d(-18, 37),
                         SampleMecanumDrive.getVelocityConstraint(tapeVel, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();//TAPE
 
         TrajectorySequence left2 = drive.trajectorySequenceBuilder(left.end())
-                .lineTo(new Vector2d(-38.5,  31.5),
-                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
+                .lineTo(new Vector2d(-41,  34),
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();//GO TO BOARD
 
         TrajectorySequence left3 = drive.trajectorySequenceBuilder(left2.end())
-                .lineTo(new Vector2d(-32,  31.5))
+                .lineTo(new Vector2d(-32,  33.5))
                 .build();//REVERSE FROM BOARD
 
 
@@ -183,7 +183,7 @@ public class DisBlueBackFormatted extends LinearOpMode
                 drive.followTrajectorySequence(left2);
                 lift.setDispenser(dispense);
                 sleep(2000);
-                //lift.setDispenser(launch);
+                lift.setDispenser(launch);
                 drive.followTrajectorySequence(left3);
                 break;
             case "right":
@@ -196,7 +196,7 @@ public class DisBlueBackFormatted extends LinearOpMode
                 drive.followTrajectorySequence(right2);
                 lift.setDispenser(dispense);
                 sleep(2000);
-                //lift.setDispenser(launch);
+                lift.setDispenser(launch);
                 drive.followTrajectorySequence(right3);
                 break;
             case "middle":
@@ -209,7 +209,7 @@ public class DisBlueBackFormatted extends LinearOpMode
                 drive.followTrajectorySequence(middle2);
                 lift.setDispenser(dispense);
                 sleep(2000);
-                //lift.setDispenser(launch);
+                lift.setDispenser(launch);
                 drive.followTrajectorySequence(middle3);
                 break;
         }
