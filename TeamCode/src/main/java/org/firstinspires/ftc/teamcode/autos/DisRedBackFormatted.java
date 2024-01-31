@@ -171,7 +171,7 @@ public class DisRedBackFormatted extends LinearOpMode {
                 drive.followTrajectorySequence(left2);
                 lift.setDispenser(dispense);
                 sleep(2000);
-                //lift.setDispenser(launch);
+                lift.setDispenser(launch);
                 drive.followTrajectorySequence(left3);
                 break;
             case "right":
@@ -184,7 +184,7 @@ public class DisRedBackFormatted extends LinearOpMode {
                 drive.followTrajectorySequence(right2);
                 lift.setDispenser(dispense);
                 sleep(2000);
-                //lift.setDispenser(launch);
+                lift.setDispenser(launch);
                 drive.followTrajectorySequence(right3);
                 break;
             case "middle":
@@ -200,7 +200,7 @@ public class DisRedBackFormatted extends LinearOpMode {
                 sleep(1000);
                 lift.setDispenser(dispense);
                 sleep(2000);
-                //lift.setDispenser(launch);
+                lift.setDispenser(launch);
                 drive.followTrajectorySequence(middle3);
                 break;
         }
