@@ -55,8 +55,8 @@ public class Meet2TeleOpCalibrate extends LinearOpMode {
         //Slide slide = new Slide(telemetry, hardwareMap);
 
         DcMotorEx slide = hardwareMap.get(DcMotorEx.class, "slide");
-        ColorRangeSensor sensorL = hardwareMap.get(ColorRangeSensor.class, "sensorL");
-        ColorRangeSensor sensorR = hardwareMap.get(ColorRangeSensor.class, "sensorR");
+        //ColorRangeSensor sensorL = hardwareMap.get(ColorRangeSensor.class, "sensorL");
+        //ColorRangeSensor sensorR = hardwareMap.get(ColorRangeSensor.class, "sensorR");
         Lift lift = new Lift(telemetry, hardwareMap);
         BetterBoolGamepad bGamepad1 = new BetterBoolGamepad(gamepad1);
         BetterBoolGamepad bGamepad2 = new BetterBoolGamepad(gamepad2);

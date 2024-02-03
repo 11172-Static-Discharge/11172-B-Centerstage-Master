@@ -31,15 +31,15 @@ public class Lift
 
     double autoClawOpen = 1;
 
+    public double offset = 0;
+    public static double wristHigh = 0.165;
+    public static double wristMid = 0.29;
+    public static double wristHover = 0.14;
 
-    public static double wristHigh = 0.125;
-    public static double wristMid = 0.25;
-    public static double wristHover = 0.25;
-
-    public static double wristPickup = 0.61;
+    public static double wristPickup = 0.65;
 
     public static double dispenseDrop = 0.11;
-    public static  double dispenseLaunch = 0.6;
+    public static  double dispenseLaunch = 0.2;
 
     double clawLPos = 0, clawRPos = 0;
 

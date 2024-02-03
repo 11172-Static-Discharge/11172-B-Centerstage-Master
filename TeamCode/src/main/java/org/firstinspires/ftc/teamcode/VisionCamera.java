@@ -16,8 +16,12 @@ public class VisionCamera {
 
     public Telemetry telemetry;
     public String color;
+
+    public float minResultConfidence = 0.75F;
     private static final String[] labels = {"BlueHourGlass", "RedHourGlass"};
-    private static final String TFOD_MODEL_ASSET = "/sdcard/FIRST/tflitemodels/HourglassModel.tflite";
+    private static final String TFOD_MODEL_ASSET = "/sdcard/FIRST/tflitemodels/HourglassModel2.tflite";
+
+
 
     public VisionCamera(HardwareMap map, Telemetry tele, String color) {
         telemetry = tele;
@@ -29,13 +33,13 @@ public class VisionCamera {
                 .setIsModelQuantized(true)
                 .setModelInputSize(300)
                 .build();
-        tfod.setMinResultConfidence(0.6F);
+        tfod.setMinResultConfidence(minResultConfidence);
 
         visionPortal = new VisionPortal.Builder()
                 .setCamera(map.get(WebcamName.class, (color=="RED" ? "Webcam 1": "Webcam 2")))
                 .addProcessor(tfod)
                 .build();
-        tfod.setMinResultConfidence(0.6F);
+        tfod.setMinResultConfidence(minResultConfidence);
     }
 
     public void telemetryTfod() {
@@ -67,17 +71,17 @@ public class VisionCamera {
             case "RED":
                 if(recognition.isEmpty()) return "left";
                 for (int i = 0; i < recognition.size(); i++) {
-                    if (recognition.get(i).getWidth() > 250 || recognition.get(i).getHeight() > 300) ;
-                    else if (recognition.get(i).getLeft() > 300)
+                    if (recognition.get(i).getWidth() > 250 || recognition.get(i).getHeight() > 300 || recognition.get(i).getWidth()-recognition.get(i).getHeight()>20 || recognition.get(i).getLabel().equalsIgnoreCase("BlueHourGlass")) ;
+                    else if (recognition.get(i).getLeft() > 200)
                         return "middle";
-                    else if (recognition.get(i).getLeft() <= 300)
+                    else if (recognition.get(i).getLeft() <= 200)
                         return "right";
                 }
                 return "left";
             case "BLUE":
                 if(recognition.isEmpty()) return "right";
                 for (int i = 0; i < recognition.size(); i++) {
-                    if (recognition.get(i).getWidth() > 250 || recognition.get(i).getHeight() > 300) ;
+                    if (recognition.get(i).getWidth() > 250 || recognition.get(i).getHeight() > 300 || recognition.get(i).getWidth()-recognition.get(i).getHeight()>20 || recognition.get(i).getLabel().equalsIgnoreCase("RedHourGlass"));
                     else if (recognition.get(i).getLeft() > 300)
                         return "middle";
                     else if (recognition.get(i).getLeft() <= 300)

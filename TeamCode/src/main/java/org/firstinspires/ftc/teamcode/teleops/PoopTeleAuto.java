@@ -7,6 +7,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.acmerobotics.roadrunner.util.Angle;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -18,6 +19,7 @@ import org.firstinspires.ftc.teamcode.config.Lift;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @Config
+@Disabled
 @TeleOp(name = "PoopTeleAuto", group = "drive")
 public class PoopTeleAuto extends OpMode {
 
@@ -114,6 +116,7 @@ public class PoopTeleAuto extends OpMode {
     }
     public void loop() {
         poseEstimate = drive.getPoseEstimate();
+        drive.update();
         switch (currentMode) {
             case DRIVER_CONTROL:
                 drive.setWeightedDrivePower(

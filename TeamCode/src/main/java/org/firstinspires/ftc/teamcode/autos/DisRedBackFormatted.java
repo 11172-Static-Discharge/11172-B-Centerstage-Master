@@ -63,19 +63,20 @@ public class DisRedBackFormatted extends LinearOpMode {
 
 
         TrajectorySequence middle = drive.trajectorySequenceBuilder(new Pose2d())
-                .lineTo(new Vector2d(-13.4, -43.3))
+                .lineTo(new Vector2d(-13.4, -43.1))
                 .build();//TO TAPE
 
         TrajectorySequence middle2 = drive.trajectorySequenceBuilder(middle.end())
-                .lineTo(new Vector2d(-52,  -19.4),
-                        SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
+                .lineTo(new Vector2d(-30, -23.5))
+                .lineTo(new Vector2d(-51.5,  -23.5),
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();//GO TO BACKBOARD
 
         //har har har ah r arh a
 
         TrajectorySequence middle3 = drive.trajectorySequenceBuilder(middle2.end())
-                .lineTo(new Vector2d(-35,  -18),
+                .lineTo(new Vector2d(-37,  -23.5),
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();//REVERSE FROM BOARD
@@ -87,7 +88,7 @@ public class DisRedBackFormatted extends LinearOpMode {
                 .lineTo(new Vector2d(12, -29.6),
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineTo(new Vector2d(2,  -29.6),
+                .lineTo(new Vector2d(1.2,  -29.6),
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();//TAPE
@@ -97,13 +98,13 @@ public class DisRedBackFormatted extends LinearOpMode {
                 .lineTo(new Vector2d(-25,  -28),
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineTo(new Vector2d(-40,  -26),
+                .lineTo(new Vector2d(-41,  -26),
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();//GO TO BOARD
 
         TrajectorySequence left3 = drive.trajectorySequenceBuilder(left2.end())
-                .lineTo(new Vector2d(-32,  -28))
+                .lineTo(new Vector2d(-33,  -28))
                 .build();//REVERSE FROM BOARD
 
 
@@ -112,28 +113,24 @@ public class DisRedBackFormatted extends LinearOpMode {
                 //.lineTo(new Vector2d(-17, -35),
                   //      SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                     //    SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineTo(new Vector2d(-21, -35),
-                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineTo(new Vector2d(-7, -35),
-                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineTo(new Vector2d(-21.34, -35),
+                .lineTo(new Vector2d(-21, -35))
+                .lineTo(new Vector2d(-7, -35))
+                .lineTo(new Vector2d(-21.8, -35),
                         SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();//TAPE
 
         TrajectorySequence right2 = drive.trajectorySequenceBuilder(right.end())
-                .lineTo(new Vector2d(-30,  -13),
-                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
+                .lineTo(new Vector2d(-30,  -14),
+                        SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .lineTo(new Vector2d(-42, -13),
-                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
+                .lineTo(new Vector2d(-46, -14),
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();//GO TO BOARD
 
         TrajectorySequence right3 = drive.trajectorySequenceBuilder(right2.end())
-                .lineTo(new Vector2d(-32,  -15))
+                .lineTo(new Vector2d(-37,  -13))
                 .build();//REVERSE FROM BOARD
 
 
@@ -172,6 +169,7 @@ public class DisRedBackFormatted extends LinearOpMode {
                 lift.setDispenser(dispense);
                 sleep(2000);
                 lift.setDispenser(launch);
+                sleep(700);
                 drive.followTrajectorySequence(left3);
                 break;
             case "right":
@@ -185,6 +183,7 @@ public class DisRedBackFormatted extends LinearOpMode {
                 lift.setDispenser(dispense);
                 sleep(2000);
                 lift.setDispenser(launch);
+                sleep(700);
                 drive.followTrajectorySequence(right3);
                 break;
             case "middle":
@@ -201,6 +200,7 @@ public class DisRedBackFormatted extends LinearOpMode {
                 lift.setDispenser(dispense);
                 sleep(2000);
                 lift.setDispenser(launch);
+                sleep(700);
                 drive.followTrajectorySequence(middle3);
                 break;
         }
